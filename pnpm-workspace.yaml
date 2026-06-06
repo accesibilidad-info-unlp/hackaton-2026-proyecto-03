@@ -5,3 +5,4 @@ packages:
   - "!**/__tests__/**"
 allowBuilds:
   esbuild: true
+  msw: set this to true or false
