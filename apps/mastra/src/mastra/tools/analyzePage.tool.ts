@@ -7,6 +7,7 @@ import { createRequire } from 'module';
 import { getBrowserInstance } from './browser.manager';
 import { getAuditState, initAuditState, getStopConfig, checkStopSignals } from './audit.state';
 import { Finding } from '../../types/audit.types';
+import { getAffectedDisabilities } from '../utils/disabilityMapper';
 
 export const analyzePageTool = createTool({
   id: 'analyzePage',
@@ -119,6 +120,8 @@ export const analyzePageTool = createTool({
               url,
               description: violation.description,
               helpUrl: violation.helpUrl,
+              tags: violation.tags || [],
+              disabilities: getAffectedDisabilities(violation.id, violation.tags || []),
             };
 
             state.findings.push(finding);
