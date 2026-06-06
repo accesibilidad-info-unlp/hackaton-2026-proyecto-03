@@ -363,6 +363,7 @@ function App() {
   const [isScanning, setIsScanning] = useState<boolean>(false)
   const [score, setScore] = useState<number>(100)
   const [summaryData, setSummaryData] = useState<any>(null)
+  const [hasScanned, setHasScanned] = useState<boolean>(false)
   
   // Custom theme playground state
   const [customCss, setCustomCss] = useState<string>(themeCssText)
@@ -519,6 +520,7 @@ function App() {
         const minorCount = report.summary.severityBreakdown.minor || 0;
         const calculatedScore = Math.max(0, 100 - (criticalCount * 8 + seriousCount * 5 + moderateCount * 2 + minorCount));
         setScore(calculatedScore);
+        setHasScanned(true);
       } else {
         throw new Error('El reporte de auditoría no tiene el formato esperado.');
       }
@@ -558,44 +560,7 @@ function App() {
     document.body.removeChild(element);
   }
 
-  const [issues, setIssues] = useState<AuditIssue[]>([
-    {
-      id: '1',
-      impact: 'critical',
-      category: 'contraste',
-      title: 'Contraste de texto insuficiente',
-      description: 'El texto del menú superior (#navigation a) tiene una relación de contraste de 2.8:1 con el fondo. La norma WCAG 2.1 AA exige un mínimo de 4.5:1 para texto normal.',
-      recommendation: 'Modifique el color del texto a uno más oscuro (p. ej., cambie del gris claro a un azul oscuro o negro) o incremente la luminosidad del color de fondo.',
-      codeSnippet: '<a href="/cursos" class="text-slate-400 bg-slate-100">Cursos</a>'
-    },
-    {
-      id: '2',
-      impact: 'serious',
-      category: 'images',
-      title: 'Imágenes sin atributo descriptivo alt',
-      description: 'La imagen con la clase ".hero-banner-image" carece de un atributo "alt" o este se encuentra vacío. Esto impide que personas con discapacidad visual que utilicen lectores de pantalla comprendan el contenido visual.',
-      recommendation: 'Agregue el atributo alt="..." describiendo brevemente la imagen o bien declare alt="" si la imagen es puramente decorativa.',
-      codeSnippet: '<img src="/assets/hero-banner.jpg" class="hero-banner-image" />'
-    },
-    {
-      id: '3',
-      impact: 'moderate',
-      category: 'structure',
-      title: 'Saltos incorrectos en jerarquía de encabezados',
-      description: 'Se detectó un salto directo desde un nivel de encabezado <h2> a uno <h4>. Las tecnologías de asistencia dependen de una estructura lógica (h1, h2, h3, h4) para facilitar la navegación.',
-      recommendation: 'Modifique el nivel del elemento <h4> a un <h3>, o bien agregue un encabezado <h3> intermedio si la sección requiere estructuración.',
-      codeSnippet: '<h2>Noticias Recientes</h2>\\n...\\n<h4>Resultados de Exámenes</h4>'
-    },
-    {
-      id: '4',
-      impact: 'minor',
-      category: 'keyboard',
-      title: 'Elementos enfocables sin contorno visible (Focus Outline)',
-      description: 'El botón de búsqueda (.search-btn) anula el contorno visible al recibir el foco del teclado (:focus { outline: none }). Esto desorienta a los usuarios que navegan mediante el tabulador.',
-      recommendation: 'Remueva el estilo outline: none o proporcione una alternativa visual de foco altamente visible usando outline o border contrastados.',
-      codeSnippet: '.search-btn:focus { outline: none; }'
-    }
-  ])
+  const [issues, setIssues] = useState<AuditIssue[]>([])
 
   const filteredIssues = issues.filter(issue => {
     if (activeTab === 'all') return true
@@ -642,388 +607,340 @@ function App() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Left column: Controls and Theme Editor */}
-        <div className="lg:col-span-5 flex flex-col gap-8">
-          
-          {/* Scan Url Card */}
-          <Card className="shadow-lg border-border">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Globe className="w-5 h-5 text-primary" />
-                Auditar Sitio Web
-              </CardTitle>
-              <CardDescription>
-                Ingrese la URL que desea escanear para verificar el nivel de accesibilidad.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleScan} className="flex gap-2">
-                <div className="relative flex-grow">
-                  <input
-                    type="url"
-                    value={scanUrl}
-                    onChange={(e) => setScanUrl(e.target.value)}
-                    required
-                    placeholder="https://ejemplo.com"
-                    className="w-full pl-3 pr-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground transition-all"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isScanning}
-                  className="bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 cursor-pointer"
-                >
-                  {isScanning ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin text-primary-foreground" />
-                      Analizando...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 text-primary-foreground" />
-                      Escanear
-                    </>
-                  )}
-                </button>
-              </form>
-            </CardContent>
-          </Card>
+      {!hasScanned ? (
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 flex flex-col items-center justify-center min-h-[50vh]">
+          <div className="w-full max-w-2xl flex flex-col gap-8">
+            <div className="text-center space-y-4">
+              <div className="inline-flex p-3 rounded-2xl bg-primary/10 text-primary mb-2 shadow-inner">
+                <ShieldAlert className="w-12 h-12 text-primary" />
+              </div>
+              <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-foreground">
+                Auditoría de Accesibilidad IA
+              </h2>
+              <p className="text-muted-foreground text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+                Ingrese la dirección de su sitio web para analizar el nivel de cumplimiento de las pautas WCAG 2.1 de accesibilidad en tiempo real.
+              </p>
+            </div>
 
-          {/* Theme customizer Card */}
-          <Card className="shadow-lg border-border flex-grow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Palette className="w-5 h-5 text-primary" />
-                  Personalización TweakCN
+            <Card className="shadow-2xl border-border bg-card/60 backdrop-blur-md">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                  <Globe className="w-5 h-5 text-primary" />
+                  Auditar Sitio Web
                 </CardTitle>
-                <span className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full font-medium">CSS Playground</span>
-              </div>
-              <CardDescription>
-                Modifique <code className="bg-muted px-1 rounded font-mono text-xs">src/theme.css</code> para cambiar el tema en disco, o use el editor interactivo de abajo.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="flex flex-col gap-4">
-              {/* Status Info */}
-              <div className="flex items-center justify-between py-1 px-3 bg-secondary/50 rounded-lg border border-border text-xs">
-                <span className="text-muted-foreground">Estado del Estilo:</span>
-                {isPreviewActive ? (
-                  <span className="text-primary font-bold flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5" /> Vista Previa Activa
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground font-semibold">Cargado desde theme.css</span>
-                )}
-              </div>
-
-              {/* Presets Grid */}
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground block mb-2">PROBAR PRESETS EN VISTA PREVIA:</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {PRESETS.map((preset) => (
-                    <button
-                      key={preset.name}
-                      onClick={() => handlePresetSelect(preset.name, preset.css)}
-                      className={`text-xs px-3 py-2 rounded-lg border text-left font-medium transition-all cursor-pointer flex items-center justify-between ${
-                        activePreset === preset.name
-                          ? 'border-primary bg-primary/10 text-primary font-bold'
-                          : 'border-border bg-card hover:bg-muted text-muted-foreground'
-                      }`}
-                    >
-                      {preset.name}
-                      {activePreset === preset.name && <Check className="w-3.5 h-3.5 text-primary" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Textarea code container */}
-              <div className="flex flex-col flex-grow">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold text-muted-foreground block">CÓDIGO DE theme.css:</label>
-                  <div className="flex gap-3">
-                    {isPreviewActive && (
-                      <button
-                        onClick={handleResetToDisk}
-                        className="text-xs text-primary hover:underline cursor-pointer"
-                      >
-                        Desactivar Preview
-                      </button>
-                    )}
-                    <button
-                      onClick={copyToClipboard}
-                      className="text-xs text-primary hover:underline cursor-pointer flex items-center gap-1"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-3.5 h-3.5" /> Copiado
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" /> Copiar
-                        </>
-                      )}
-                    </button>
+                <CardDescription>
+                  Analice contraste de color, estructura de encabezados, alternativas de imágenes y accesibilidad por teclado.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleScan} className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-grow">
+                    <input
+                      type="url"
+                      value={scanUrl}
+                      onChange={(e) => setScanUrl(e.target.value)}
+                      required
+                      placeholder="https://ejemplo.com"
+                      className="w-full pl-3 pr-3 py-3 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground transition-all"
+                    />
                   </div>
-                </div>
-                <textarea
-                  value={customCss}
-                  onChange={(e) => {
-                    setCustomCss(e.target.value)
-                    setActivePreset('Custom CSS')
-                    setIsPreviewActive(true)
-                  }}
-                  className="w-full flex-grow min-h-[220px] p-3 rounded-lg border border-border bg-muted/50 font-mono text-[11px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary leading-relaxed resize-y"
-                  placeholder="Pegue aquí el bloque CSS de TweakCN"
-                />
-              </div>
-
-              <div className="bg-primary/5 rounded-lg p-3 border border-primary/10 text-xs text-muted-foreground leading-relaxed flex gap-2">
-                <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-foreground">¿Cómo aplicar a producción?</strong> Descargue este archivo pulsando el botón de abajo y reemplácelo en su proyecto como <code className="bg-muted px-1.5 py-0.5 rounded text-foreground font-mono">src/theme.css</code>. ¡El tema y tipo de letra cambiarán en toda la página!
-                </div>
-              </div>
-            </CardContent>
-
-            <CardFooter className="pt-0 flex gap-3">
-              <button
-                onClick={downloadThemeFile}
-                className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all border border-border"
-              >
-                <Download className="w-4 h-4" />
-                Descargar theme.css
-              </button>
-            </CardFooter>
-          </Card>
-        </div>
-
-        {/* Right column: Audit Results Dashboard */}
-        <div className="lg:col-span-7 flex flex-col gap-8">
+                  <button
+                    type="submit"
+                    disabled={isScanning}
+                    className="bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-primary/20 shrink-0"
+                  >
+                    {isScanning ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin text-primary-foreground" />
+                        Analizando...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-primary-foreground" />
+                        Comenzar Auditoría
+                      </>
+                    )}
+                  </button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      ) : (
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Main Score and Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Left column: Controls */}
+          <div className="lg:col-span-4 flex flex-col gap-8 sticky top-24 self-start">
             
-            {/* Score circle card */}
-            <Card className="col-span-1 shadow-lg border-border flex flex-col items-center justify-center p-6 text-center">
-              <div className="relative w-28 h-28 flex items-center justify-center">
-                <svg className="absolute w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="42"
-                    fill="transparent"
-                    stroke="var(--border)"
-                    strokeWidth="8"
-                    className="stroke-border"
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="42"
-                    fill="transparent"
-                    stroke="var(--primary)"
-                    strokeWidth="8"
-                    strokeDasharray={`${2 * Math.PI * 42}`}
-                    strokeDashoffset={`${2 * Math.PI * 42 * (1 - score / 100)}`}
-                    strokeLinecap="round"
-                    className="stroke-primary transition-all duration-1000 ease-in-out"
-                  />
-                </svg>
-                <span className="text-3xl font-extrabold text-foreground tracking-tight">{score}</span>
-              </div>
-              <h3 className="font-bold text-sm text-foreground mt-4 leading-none">Puntaje Global</h3>
-              <p className="text-xs text-muted-foreground mt-1">Cumplimiento WCAG 2.1</p>
+            {/* Scan Url Card */}
+            <Card className="shadow-lg border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Globe className="w-5 h-5 text-primary" />
+                  Auditar Sitio Web
+                </CardTitle>
+                <CardDescription>
+                  Ingrese la URL que desea escanear para verificar el nivel de accesibilidad.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleScan} className="flex gap-2">
+                  <div className="relative flex-grow">
+                    <input
+                      type="url"
+                      value={scanUrl}
+                      onChange={(e) => setScanUrl(e.target.value)}
+                      required
+                      placeholder="https://ejemplo.com"
+                      className="w-full pl-3 pr-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground transition-all"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isScanning}
+                    className="bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 cursor-pointer"
+                  >
+                    {isScanning ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin text-primary-foreground" />
+                        Analizando...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-primary-foreground" />
+                        Escanear
+                      </>
+                    )}
+                  </button>
+                </form>
+              </CardContent>
             </Card>
+          </div>
 
-            {/* General metrics summary */}
-            <Card className="col-span-1 md:col-span-2 shadow-lg border-border p-6 flex flex-col justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                  <Activity className="w-4.5 h-4.5 text-primary" />
-                  Resumen de Auditoría
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5">Analizado para: <span className="font-mono text-foreground">{scanUrl}</span></p>
+          {/* Right column: Audit Results Dashboard */}
+          <div className="lg:col-span-8 flex flex-col gap-8">
+            
+            {/* Main Score and Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              {/* Score circle card */}
+              <Card className="col-span-1 shadow-lg border-border flex flex-col items-center justify-center p-6 text-center">
+                <div className="relative w-28 h-28 flex items-center justify-center">
+                  <svg className="absolute w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="42"
+                      fill="transparent"
+                      stroke="var(--border)"
+                      strokeWidth="8"
+                      className="stroke-border"
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="42"
+                      fill="transparent"
+                      stroke="var(--primary)"
+                      strokeWidth="8"
+                      strokeDasharray={`${2 * Math.PI * 42}`}
+                      strokeDashoffset={`${2 * Math.PI * 42 * (1 - score / 100)}`}
+                      strokeLinecap="round"
+                      className="stroke-primary transition-all duration-1000 ease-in-out"
+                    />
+                  </svg>
+                  <span className="text-3xl font-extrabold text-foreground tracking-tight">{score}</span>
+                </div>
+                <h3 className="font-bold text-sm text-foreground mt-4 leading-none">Puntaje Global</h3>
+                <p className="text-xs text-muted-foreground mt-1">Cumplimiento WCAG 2.1</p>
+              </Card>
+
+              {/* General metrics summary */}
+              <Card className="col-span-1 md:col-span-2 shadow-lg border-border p-6 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                    <Activity className="w-4.5 h-4.5 text-primary" />
+                    Resumen de Auditoría
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">Analizado para: <span className="font-mono text-foreground">{scanUrl}</span></p>
+                </div>
+
+                <div className="grid grid-cols-4 gap-3 my-4">
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-center flex flex-col justify-center">
+                    <span className="text-xl font-extrabold text-destructive block leading-none">
+                      {summaryData?.severityBreakdown?.critical ?? issues.filter(i => i.impact === 'critical').length}
+                    </span>
+                    <span className="text-[9px] font-bold text-destructive/80 uppercase tracking-wider block mt-1.5">Críticos</span>
+                  </div>
+                  <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
+                    <span className="text-xl font-extrabold text-orange-500 block leading-none">
+                      {summaryData?.severityBreakdown?.serious ?? issues.filter(i => i.impact === 'serious').length}
+                    </span>
+                    <span className="text-[9px] font-bold text-orange-500/80 uppercase tracking-wider block mt-1.5">Serios</span>
+                  </div>
+                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
+                    <span className="text-xl font-extrabold text-yellow-500 block leading-none">
+                      {summaryData?.severityBreakdown?.moderate ?? issues.filter(i => i.impact === 'moderate').length}
+                    </span>
+                    <span className="text-[9px] font-bold text-yellow-500/80 uppercase tracking-wider block mt-1.5">Moderad.</span>
+                  </div>
+                  <div className="bg-secondary/50 border border-border rounded-xl p-3 text-center flex flex-col justify-center">
+                    <span className="text-xl font-extrabold text-foreground block leading-none">
+                      {summaryData?.severityBreakdown?.minor ?? issues.filter(i => i.impact === 'minor').length}
+                    </span>
+                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block mt-1.5">Menores</span>
+                  </div>
+                </div>
+
+                <div className="text-xs text-muted-foreground flex flex-col gap-2 mt-auto">
+                  <div className="flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-primary" />
+                    <span>Normas aplicadas: <strong>WCAG 2.1 Nivel AA</strong></span>
+                  </div>
+                  {summaryData && (
+                    <div className="flex items-center gap-4 mt-1 border-t border-border/50 pt-2.5">
+                      <span className="flex items-center gap-1.5 font-medium"><Globe className="w-3.5 h-3.5 text-primary/70"/> {summaryData.totalPagesVisited} pág.</span>
+                      <span className="flex items-center gap-1.5 font-medium"><Activity className="w-3.5 h-3.5 text-primary/70"/> {summaryData.totalViolations} violaciones</span>
+                      {summaryData.durationMs && <span className="flex items-center gap-1.5 font-medium"><RefreshCw className="w-3.5 h-3.5 text-primary/70"/> {(summaryData.durationMs / 1000).toFixed(1)}s</span>}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+
+            {/* Filtering and list of issues */}
+            <div>
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <h3 className="font-bold text-base text-foreground">Detalle de Hallazgos</h3>
+                
+                {/* Tabs */}
+                <div className="flex bg-muted p-1 rounded-lg border border-border flex-wrap gap-1">
+                  <button
+                    onClick={() => setActiveTab('all')}
+                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer ${
+                      activeTab === 'all'
+                        ? 'bg-card text-foreground shadow-sm font-bold'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Todos ({issues.length})
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('critical')}
+                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                      activeTab === 'critical'
+                        ? 'bg-destructive text-destructive-foreground shadow-sm font-bold'
+                        : 'text-muted-foreground hover:text-destructive'
+                    }`}
+                  >
+                    Críticos ({issues.filter(i => i.impact === 'critical').length})
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('serious')}
+                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                      activeTab === 'serious'
+                        ? 'bg-orange-500 text-white shadow-sm border border-orange-500/20 font-bold'
+                        : 'text-muted-foreground hover:text-orange-500'
+                    }`}
+                  >
+                    Serios ({issues.filter(i => i.impact === 'serious').length})
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('moderate')}
+                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                      activeTab === 'moderate'
+                        ? 'bg-yellow-500 text-white shadow-sm border border-yellow-500/20 font-bold'
+                        : 'text-muted-foreground hover:text-yellow-500'
+                    }`}
+                  >
+                    Moderados ({issues.filter(i => i.impact === 'moderate').length})
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('minor')}
+                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                      activeTab === 'minor'
+                        ? 'bg-secondary text-secondary-foreground shadow-sm border border-border font-bold'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Menores ({issues.filter(i => i.impact === 'minor').length})
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-3 my-4">
-                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-center flex flex-col justify-center">
-                  <span className="text-xl font-extrabold text-destructive block leading-none">
-                    {summaryData?.severityBreakdown?.critical ?? issues.filter(i => i.impact === 'critical').length}
-                  </span>
-                  <span className="text-[9px] font-bold text-destructive/80 uppercase tracking-wider block mt-1.5">Críticos</span>
-                </div>
-                <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
-                  <span className="text-xl font-extrabold text-orange-500 block leading-none">
-                    {summaryData?.severityBreakdown?.serious ?? issues.filter(i => i.impact === 'serious').length}
-                  </span>
-                  <span className="text-[9px] font-bold text-orange-500/80 uppercase tracking-wider block mt-1.5">Serios</span>
-                </div>
-                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
-                  <span className="text-xl font-extrabold text-yellow-500 block leading-none">
-                    {summaryData?.severityBreakdown?.moderate ?? issues.filter(i => i.impact === 'moderate').length}
-                  </span>
-                  <span className="text-[9px] font-bold text-yellow-500/80 uppercase tracking-wider block mt-1.5">Moderad.</span>
-                </div>
-                <div className="bg-secondary/50 border border-border rounded-xl p-3 text-center flex flex-col justify-center">
-                  <span className="text-xl font-extrabold text-foreground block leading-none">
-                    {summaryData?.severityBreakdown?.minor ?? issues.filter(i => i.impact === 'minor').length}
-                  </span>
-                  <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block mt-1.5">Menores</span>
-                </div>
-              </div>
+              {/* List */}
+              <div className="flex flex-col gap-4">
+                {filteredIssues.map((issue) => (
+                  <Card key={issue.id} className="shadow-md hover:shadow-lg transition-all duration-200 border-border">
+                    <CardHeader className="pb-3 flex-row items-start justify-between gap-4">
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          {issue.impact === 'critical' && (
+                            <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-2 py-0.5 rounded-md border border-destructive/20 flex items-center gap-1">
+                              <ShieldAlert className="w-3 h-3" /> Crítico
+                            </span>
+                          )}
+                          {issue.impact === 'serious' && (
+                            <span className="bg-orange-500/10 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-500/20 flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" /> Serio
+                            </span>
+                          )}
+                          {issue.impact === 'moderate' && (
+                            <span className="bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-yellow-500/20 flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" /> Moderado
+                            </span>
+                          )}
+                          {issue.impact === 'minor' && (
+                            <span className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border flex items-center gap-1">
+                              <Info className="w-3 h-3" /> Menor
+                            </span>
+                          )}
+                          <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
+                            Categoría: {issue.category}
+                          </span>
+                        </div>
+                        <CardTitle className="text-base font-bold text-foreground mt-2 leading-tight">
+                          {issue.title}
+                        </CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pb-4">
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {issue.description}
+                      </p>
 
-              <div className="text-xs text-muted-foreground flex flex-col gap-2 mt-auto">
-                <div className="flex items-center gap-1.5">
-                  <FileText className="w-4 h-4 text-primary" />
-                  <span>Normas aplicadas: <strong>WCAG 2.1 Nivel AA</strong></span>
-                </div>
-                {summaryData && (
-                  <div className="flex items-center gap-4 mt-1 border-t border-border/50 pt-2.5">
-                    <span className="flex items-center gap-1.5 font-medium"><Globe className="w-3.5 h-3.5 text-primary/70"/> {summaryData.totalPagesVisited} pág.</span>
-                    <span className="flex items-center gap-1.5 font-medium"><Activity className="w-3.5 h-3.5 text-primary/70"/> {summaryData.totalViolations} violaciones</span>
-                    {summaryData.durationMs && <span className="flex items-center gap-1.5 font-medium"><RefreshCw className="w-3.5 h-3.5 text-primary/70"/> {(summaryData.durationMs / 1000).toFixed(1)}s</span>}
+                      {issue.codeSnippet && (
+                        <div className="mt-3">
+                          <label className="text-[10px] font-semibold text-muted-foreground block mb-1">CÓDIGO INVOLUCRADO:</label>
+                          <pre className="bg-muted p-2.5 rounded-lg text-xs font-mono text-foreground overflow-x-auto border border-border">
+                            <code>{issue.codeSnippet}</code>
+                          </pre>
+                        </div>
+                      )}
+
+                      <div className="mt-4 bg-secondary/30 rounded-lg p-3 border border-border">
+                        <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                          <ChevronRight className="w-3.5 h-3.5 text-primary" />
+                          Recomendación de corrección:
+                        </h4>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                          {issue.recommendation}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+
+                {filteredIssues.length === 0 && (
+                  <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                    <p className="text-muted-foreground text-sm">No se encontraron elementos de este tipo en la auditoría.</p>
                   </div>
                 )}
               </div>
-            </Card>
-          </div>
-
-          {/* Filtering and list of issues */}
-          <div>
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <h3 className="font-bold text-base text-foreground">Detalle de Hallazgos</h3>
-              
-              {/* Tabs */}
-              <div className="flex bg-muted p-1 rounded-lg border border-border flex-wrap gap-1">
-                <button
-                  onClick={() => setActiveTab('all')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer ${
-                    activeTab === 'all'
-                      ? 'bg-card text-foreground shadow-sm font-bold'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Todos ({issues.length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('critical')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeTab === 'critical'
-                      ? 'bg-destructive text-destructive-foreground shadow-sm font-bold'
-                      : 'text-muted-foreground hover:text-destructive'
-                  }`}
-                >
-                  Críticos ({issues.filter(i => i.impact === 'critical').length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('serious')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeTab === 'serious'
-                      ? 'bg-orange-500 text-white shadow-sm border border-orange-500/20 font-bold'
-                      : 'text-muted-foreground hover:text-orange-500'
-                  }`}
-                >
-                  Serios ({issues.filter(i => i.impact === 'serious').length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('moderate')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeTab === 'moderate'
-                      ? 'bg-yellow-500 text-white shadow-sm border border-yellow-500/20 font-bold'
-                      : 'text-muted-foreground hover:text-yellow-500'
-                  }`}
-                >
-                  Moderados ({issues.filter(i => i.impact === 'moderate').length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('minor')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeTab === 'minor'
-                      ? 'bg-secondary text-secondary-foreground shadow-sm border border-border font-bold'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  Menores ({issues.filter(i => i.impact === 'minor').length})
-                </button>
-              </div>
-            </div>
-
-            {/* List */}
-            <div className="flex flex-col gap-4">
-              {filteredIssues.map((issue) => (
-                <Card key={issue.id} className="shadow-md hover:shadow-lg transition-all duration-200 border-border">
-                  <CardHeader className="pb-3 flex-row items-start justify-between gap-4">
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2">
-                        {issue.impact === 'critical' && (
-                          <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-2 py-0.5 rounded-md border border-destructive/20 flex items-center gap-1">
-                            <ShieldAlert className="w-3 h-3" /> Crítico
-                          </span>
-                        )}
-                        {issue.impact === 'serious' && (
-                          <span className="bg-orange-500/10 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-500/20 flex items-center gap-1">
-                            <AlertTriangle className="w-3 h-3" /> Serio
-                          </span>
-                        )}
-                        {issue.impact === 'moderate' && (
-                          <span className="bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-yellow-500/20 flex items-center gap-1">
-                            <AlertTriangle className="w-3 h-3" /> Moderado
-                          </span>
-                        )}
-                        {issue.impact === 'minor' && (
-                          <span className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border flex items-center gap-1">
-                            <Info className="w-3 h-3" /> Menor
-                          </span>
-                        )}
-                        <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
-                          Categoría: {issue.category}
-                        </span>
-                      </div>
-                      <CardTitle className="text-base font-bold text-foreground mt-2 leading-tight">
-                        {issue.title}
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pb-4">
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {issue.description}
-                    </p>
-
-                    {issue.codeSnippet && (
-                      <div className="mt-3">
-                        <label className="text-[10px] font-semibold text-muted-foreground block mb-1">CÓDIGO INVOLUCRADO:</label>
-                        <pre className="bg-muted p-2.5 rounded-lg text-xs font-mono text-foreground overflow-x-auto border border-border">
-                          <code>{issue.codeSnippet}</code>
-                        </pre>
-                      </div>
-                    )}
-
-                    <div className="mt-4 bg-secondary/30 rounded-lg p-3 border border-border">
-                      <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                        <ChevronRight className="w-3.5 h-3.5 text-primary" />
-                        Recomendación de corrección:
-                      </h4>
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                        {issue.recommendation}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-
-              {filteredIssues.length === 0 && (
-                <div className="text-center py-12 border border-dashed border-border rounded-xl">
-                  <p className="text-muted-foreground text-sm">No se encontraron elementos de este tipo en la auditoría.</p>
-                </div>
-              )}
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      )}
     </div>
   )
 }
