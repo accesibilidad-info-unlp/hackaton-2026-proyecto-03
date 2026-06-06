@@ -1,7 +1,10 @@
 packages:
   - '.'
 allowBuilds:
+  '@google/genai': true
+  bufferutil: true
   esbuild: true
+  protobufjs: true
   sharp: true
 minimumReleaseAgeExclude:
   - '@types/node@25.9.2'
