@@ -412,6 +412,7 @@ function App() {
   const [score, setScore] = useState<number>(100)
   const [summaryData, setSummaryData] = useState<any>(null)
   const [hasScanned, setHasScanned] = useState<boolean>(false)
+  const [currentStep, setCurrentStep] = useState<number>(0)
   const [expandedRules, setExpandedRules] = useState<Record<string, boolean>>({})
 
   const toggleRuleExpanded = (ruleId: string) => {
@@ -494,6 +495,21 @@ function App() {
     };
   }, [customCss, isPreviewActive]);
 
+  useEffect(() => {
+    let interval: any = null;
+    if (isScanning) {
+      setCurrentStep(0);
+      interval = setInterval(() => {
+        setCurrentStep(prev => (prev < 3 ? prev + 1 : prev));
+      }, 2500);
+    } else {
+      setCurrentStep(0);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isScanning]);
+
   const toggleDarkMode = () => {
     const nextDark = !darkMode
     setDarkMode(nextDark)
@@ -509,6 +525,8 @@ function App() {
     e.preventDefault()
     if (!scanUrl.trim()) return
     setIsScanning(true)
+    const wasScanned = hasScanned
+    setHasScanned(true)
 
     try {
       const response = await fetch('/api/agents/accessibility-agent/generate', {
@@ -585,6 +603,9 @@ function App() {
     } catch (error: any) {
       console.error('Error al realizar el escaneo:', error);
       alert(`Hubo un error al ejecutar la auditoría de accesibilidad: ${error?.message || error}. Asegúrate de que el backend de Mastra esté corriendo.`);
+      if (!wasScanned) {
+        setHasScanned(false);
+      }
     } finally {
       setIsScanning(false);
     }
@@ -716,6 +737,7 @@ function App() {
                       value={scanUrl}
                       onChange={(e) => setScanUrl(e.target.value)}
                       required
+                      disabled={isScanning}
                       placeholder="https://ejemplo.com"
                       className="w-full pl-3 pr-3 py-3 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground transition-all"
                     />
@@ -763,6 +785,7 @@ function App() {
                     value={scanUrl}
                     onChange={(e) => setScanUrl(e.target.value)}
                     required
+                    disabled={isScanning}
                     placeholder="https://ejemplo.com"
                     className="w-full pl-3 pr-3 py-2.5 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground transition-all"
                   />
@@ -788,8 +811,132 @@ function App() {
             </CardContent>
           </Card>
 
-          {/* Fila 2: Dos columnas (Puntaje Global y Resumen de Auditoría) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {isScanning ? (
+            <div className="flex flex-col items-center justify-center min-h-[50vh] w-full gap-8 py-12">
+              <div className="relative flex items-center justify-center mb-6">
+                <div className="relative w-20 h-20 rounded-full bg-card/80 backdrop-blur border border-border shadow-xl flex items-center justify-center">
+                  <Activity className="w-10 h-10 text-primary" />
+                </div>
+              </div>
+
+              <div className="text-center max-w-md space-y-3">
+                <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center justify-center gap-2">
+                  <span>Analizando sitio web...</span>
+                </h3>
+                <p className="text-xs text-muted-foreground font-mono break-all px-4 bg-muted/50 py-1.5 rounded-lg border border-border/50">
+                  {scanUrl}
+                </p>
+                <p className="text-xs text-muted-foreground/80 max-w-xs mx-auto">
+                  Evaluando accesibilidad por teclado, contraste de colores, estructura de encabezados y pautas WCAG 2.2...
+                </p>
+              </div>
+
+              {/* Dynamic steps showing audit progress */}
+              <div className="w-full max-w-md bg-card/40 backdrop-blur-sm rounded-2xl border border-border/80 p-5 shadow-sm space-y-4">
+                <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2">Progreso de la Auditoría</div>
+                <div className="space-y-3">
+                  {/* Step 1 */}
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-3">
+                      {currentStep > 0 ? (
+                        <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </div>
+                      ) : currentStep === 0 ? (
+                        <div className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                          <RefreshCw className="w-3 h-3" />
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full border border-border flex items-center justify-center shrink-0">
+                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                        </div>
+                      )}
+                      <span className={`transition-colors duration-300 ${currentStep === 0 ? 'text-foreground font-semibold' : currentStep > 0 ? 'text-muted-foreground' : 'text-muted-foreground/60'}`}>
+                        Conectando con el sitio y cargando DOM
+                      </span>
+                    </div>
+                    {currentStep === 0 && <span className="text-[10px] text-primary font-mono">En curso...</span>}
+                    {currentStep > 0 && <span className="text-[10px] text-emerald-500 font-semibold">Listo</span>}
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-3">
+                      {currentStep > 1 ? (
+                        <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </div>
+                      ) : currentStep === 1 ? (
+                        <div className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                          <RefreshCw className="w-3 h-3" />
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full border border-border flex items-center justify-center shrink-0">
+                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                        </div>
+                      )}
+                      <span className={`transition-colors duration-300 ${currentStep === 1 ? 'text-foreground font-semibold' : currentStep > 1 ? 'text-muted-foreground' : 'text-muted-foreground/60'}`}>
+                        Ejecutando reglas de accesibilidad Axe-Core
+                      </span>
+                    </div>
+                    {currentStep === 1 && <span className="text-[10px] text-primary font-mono">En curso...</span>}
+                    {currentStep > 1 && <span className="text-[10px] text-emerald-500 font-semibold">Listo</span>}
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-3">
+                      {currentStep > 2 ? (
+                        <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </div>
+                      ) : currentStep === 2 ? (
+                        <div className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                          <RefreshCw className="w-3 h-3" />
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full border border-border flex items-center justify-center shrink-0">
+                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                        </div>
+                      )}
+                      <span className={`transition-colors duration-300 ${currentStep === 2 ? 'text-foreground font-semibold' : currentStep > 2 ? 'text-muted-foreground' : 'text-muted-foreground/60'}`}>
+                        Mapeando impacto por tipo de discapacidad
+                      </span>
+                    </div>
+                    {currentStep === 2 && <span className="text-[10px] text-primary font-mono">En curso...</span>}
+                    {currentStep > 2 && <span className="text-[10px] text-emerald-500 font-semibold">Listo</span>}
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-3">
+                      {currentStep > 3 ? (
+                        <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </div>
+                      ) : currentStep === 3 ? (
+                        <div className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                          <RefreshCw className="w-3 h-3" />
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full border border-border flex items-center justify-center shrink-0">
+                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                        </div>
+                      )}
+                      <span className={`transition-colors duration-300 ${currentStep === 3 ? 'text-foreground font-semibold' : currentStep > 3 ? 'text-muted-foreground' : 'text-muted-foreground/60'}`}>
+                        Generando reporte de recomendaciones con IA
+                      </span>
+                    </div>
+                    {currentStep === 3 && <span className="text-[10px] text-primary font-mono">En curso...</span>}
+                    {currentStep > 3 && <span className="text-[10px] text-emerald-500 font-semibold">Listo</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Fila 2: Dos columnas (Puntaje Global y Resumen de Auditoría) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
             {/* Score circle card (col-span-1) */}
             <Card className="shadow-lg border-border flex flex-col items-center justify-center p-6 text-center">
@@ -1075,7 +1222,9 @@ function App() {
               )}
             </div>
           </div>
-        </main>
+        </>
+      )}
+    </main>
       )}
     </div>
   )
