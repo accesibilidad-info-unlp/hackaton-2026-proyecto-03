@@ -1,13 +1,11 @@
-# Nombre del proyecto
+# Auditor inteligente de accesibilidad con IA
 
 ## Descripción
 
-Breve descripción del proyecto y del problema que busca resolver.
+Un auditor de accesibilidad que utiliza IA para detectar problemas de accesibilidad en sitios web.
 
 ## Integrantes
 
-- Nombre Apellido
-- Nombre Apellido
 
 ## Tecnologías utilizadas
 

@@ -1,0 +1,7 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+  - "plugins/**/*"
+  - "!**/__tests__/**"
+allowBuilds:
+  esbuild: true
