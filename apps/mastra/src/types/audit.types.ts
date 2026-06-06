@@ -9,6 +9,8 @@ export interface Finding {
   helpUrl: string;
   tags?: string[];
   disabilities?: string[];
+  translatedName?: string;
+  translatedDescription?: string;
 }
 
 export type StopReason = 'max_pages' | 'max_depth' | 'timeout' | 'browser_crash' | 'agent_decision';

@@ -32,6 +32,8 @@ export const finishAuditTool = createTool({
       helpUrl: z.string(),
       tags: z.array(z.string()).optional(),
       disabilities: z.array(z.string()).optional(),
+      translatedName: z.string().optional(),
+      translatedDescription: z.string().optional(),
     })),
     byPage: z.record(z.string(), z.number()),
     byRule: z.record(z.string(), z.number()),

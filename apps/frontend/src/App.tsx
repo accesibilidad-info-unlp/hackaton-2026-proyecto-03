@@ -360,6 +360,10 @@ interface AuditIssue {
   recommendation: string
   codeSnippet?: string
   disabilities?: string[]
+  translatedName?: string
+  translatedDescription?: string
+  url?: string
+  selector?: string
 }
 
 function getDisabilityStyle(disability: string) {
@@ -408,6 +412,11 @@ function App() {
   const [score, setScore] = useState<number>(100)
   const [summaryData, setSummaryData] = useState<any>(null)
   const [hasScanned, setHasScanned] = useState<boolean>(false)
+  const [expandedRules, setExpandedRules] = useState<Record<string, boolean>>({})
+
+  const toggleRuleExpanded = (ruleId: string) => {
+    setExpandedRules(prev => ({ ...prev, [ruleId]: !prev[ruleId] }))
+  }
 
   // Custom theme playground state
   const [customCss, setCustomCss] = useState<string>(themeCssText)
@@ -548,10 +557,14 @@ function App() {
             impact: violation.impact || 'moderate',
             category,
             title: violation.ruleId,
-            description: `${violation.description} (URL: ${violation.url}, Selector: ${violation.selector})`,
+            description: violation.description,
             recommendation: `Consulte más detalles en: ${violation.helpUrl}`,
             codeSnippet: violation.html,
-            disabilities: violation.disabilities || []
+            disabilities: violation.disabilities || [],
+            translatedName: violation.translatedName,
+            translatedDescription: violation.translatedDescription,
+            url: violation.url,
+            selector: violation.selector
           };
         });
 
@@ -612,6 +625,34 @@ function App() {
     return issue.impact === activeTab
   })
 
+  // Group filtered issues by ruleId (stored in issue.title)
+  const groupedIssues = filteredIssues.reduce((acc, issue) => {
+    const key = issue.title;
+    if (!acc[key]) {
+      acc[key] = {
+        ruleId: key,
+        translatedName: issue.translatedName || key,
+        translatedDescription: issue.translatedDescription || issue.description,
+        impact: issue.impact,
+        category: issue.category,
+        disabilities: issue.disabilities || [],
+        recommendation: issue.recommendation,
+        instances: []
+      };
+    }
+    acc[key].instances.push(issue);
+    return acc;
+  }, {} as Record<string, {
+    ruleId: string;
+    translatedName: string;
+    translatedDescription: string;
+    impact: 'critical' | 'serious' | 'moderate' | 'minor';
+    category: 'contraste' | 'images' | 'structure' | 'keyboard' | 'other';
+    disabilities: string[];
+    recommendation: string;
+    instances: AuditIssue[];
+  }>);
+
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300 pb-16">
       {/* Dynamic Style Injection for live tweakcn previewing in the sandbox */}
@@ -627,9 +668,7 @@ function App() {
             <div>
               <h1 className="font-bold text-lg leading-none tracking-tight flex items-center gap-1.5">
                 Auditor de Accesibilidad IA
-                <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium border border-primary/20">v1.2</span>
               </h1>
-              <p className="text-xs text-muted-foreground">Estilos adoptados dinámicamente de theme.css</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -655,7 +694,7 @@ function App() {
                 Auditoría de Accesibilidad IA
               </h2>
               <p className="text-muted-foreground text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-                Ingrese la dirección de su sitio web para analizar el nivel de cumplimiento de las pautas WCAG 2.1 de accesibilidad en tiempo real.
+                Ingrese la dirección de su sitio web para analizar el nivel de cumplimiento de las pautas WCAG 2.2 de accesibilidad en tiempo real.
               </p>
             </div>
 
@@ -781,7 +820,7 @@ function App() {
                 <span className="text-3xl font-extrabold text-foreground tracking-tight">{score}</span>
               </div>
               <h3 className="font-bold text-sm text-foreground mt-4 leading-none">Puntaje Global</h3>
-              <p className="text-xs text-muted-foreground mt-1">Cumplimiento WCAG 2.1</p>
+              <p className="text-xs text-muted-foreground mt-1">Cumplimiento WCAG 2.2</p>
             </Card>
 
             {/* General metrics summary (col-span-2) */}
@@ -824,7 +863,7 @@ function App() {
               <div className="text-xs text-muted-foreground flex flex-col gap-2 mt-auto">
                 <div className="flex items-center gap-1.5">
                   <FileText className="w-4 h-4 text-primary shrink-0" />
-                  <span>Normas aplicadas: <strong>WCAG 2.1 Nivel AA</strong></span>
+                  <span>Normas aplicadas: <strong>WCAG 2.2</strong></span>
                 </div>
                 {summaryData && (
                   <div className="flex items-center gap-4 mt-1 border-t border-border/50 pt-2.5">
@@ -895,81 +934,141 @@ function App() {
 
             {/* List */}
             <div className="flex flex-col gap-4">
-              {filteredIssues.map((issue) => (
-                <Card key={issue.id} className="shadow-md hover:shadow-lg transition-all duration-200 border-border">
-                  <CardHeader className="pb-3 flex-row items-start justify-between gap-4">
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {issue.impact === 'critical' && (
-                          <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-2 py-0.5 rounded-md border border-destructive/20 flex items-center gap-1">
-                            <ShieldAlert className="w-3 h-3" /> Crítico
-                          </span>
-                        )}
-                        {issue.impact === 'serious' && (
-                          <span className="bg-orange-500/10 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-500/20 flex items-center gap-1">
-                            <AlertTriangle className="w-3 h-3" /> Serio
-                          </span>
-                        )}
-                        {issue.impact === 'moderate' && (
-                          <span className="bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-yellow-500/20 flex items-center gap-1">
-                            <AlertTriangle className="w-3 h-3" /> Moderado
-                          </span>
-                        )}
-                        {issue.impact === 'minor' && (
-                          <span className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border flex items-center gap-1">
-                            <Info className="w-3 h-3" /> Menor
-                          </span>
-                        )}
-                        <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mr-1">
-                          Categoría: {issue.category}
-                        </span>
-                        {issue.disabilities && issue.disabilities.map((disability, idx) => {
-                          const style = getDisabilityStyle(disability);
-                          const Icon = style.icon;
-                          return (
-                            <span
-                              key={idx}
-                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-all duration-200 hover:scale-105 ${style.bg}`}
-                            >
-                              <Icon className="w-3 h-3" />
-                              {disability}
+              {Object.values(groupedIssues).map((group) => {
+                const isExpanded = !!expandedRules[group.ruleId];
+                return (
+                  <Card key={group.ruleId} className="shadow-md hover:shadow-lg transition-all duration-200 border-border bg-card/60 backdrop-blur-md">
+                    <CardHeader className="pb-3">
+                      <div className="flex flex-col gap-2">
+                        {/* Badges row */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {group.impact === 'critical' && (
+                            <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-2 py-0.5 rounded-md border border-destructive/20 flex items-center gap-1">
+                              <ShieldAlert className="w-3 h-3" /> Crítico
                             </span>
-                          );
-                        })}
+                          )}
+                          {group.impact === 'serious' && (
+                            <span className="bg-orange-500/10 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-500/20 flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" /> Serio
+                            </span>
+                          )}
+                          {group.impact === 'moderate' && (
+                            <span className="bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-yellow-500/20 flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" /> Moderado
+                            </span>
+                          )}
+                          {group.impact === 'minor' && (
+                            <span className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border flex items-center gap-1">
+                              <Info className="w-3 h-3" /> Menor
+                            </span>
+                          )}
+                          <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mr-1">
+                            Categoría: {group.category}
+                          </span>
+                          {group.disabilities && group.disabilities.map((disability, idx) => {
+                            const style = getDisabilityStyle(disability);
+                            const Icon = style.icon;
+                            return (
+                              <span
+                                key={idx}
+                                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-all duration-200 hover:scale-105 ${style.bg}`}
+                              >
+                                <Icon className="w-3 h-3" />
+                                {disability}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        {/* Title in Spanish with ruleId in badge */}
+                        <div className="flex items-baseline justify-between flex-wrap gap-2 mt-1">
+                          <CardTitle className="text-base font-bold text-foreground leading-tight">
+                            {group.translatedName}
+                          </CardTitle>
+                          <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border font-bold">
+                            {group.ruleId}
+                          </span>
+                        </div>
                       </div>
-                      <CardTitle className="text-base font-bold text-foreground mt-2 leading-tight">
-                        {issue.title}
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pb-4">
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {issue.description}
-                    </p>
+                    </CardHeader>
 
-                    {issue.codeSnippet && (
-                      <div className="mt-3">
-                        <label className="text-[10px] font-semibold text-muted-foreground block mb-1">CÓDIGO INVOLUCRADO:</label>
-                        <pre className="bg-muted p-2.5 rounded-lg text-xs font-mono text-foreground overflow-x-auto border border-border">
-                          <code>{issue.codeSnippet}</code>
-                        </pre>
-                      </div>
-                    )}
-
-                    <div className="mt-4 bg-secondary/30 rounded-lg p-3 border border-border">
-                      <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                        <ChevronRight className="w-3.5 h-3.5 text-primary" />
-                        Recomendación de corrección:
-                      </h4>
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                        {issue.recommendation}
+                    <CardContent className="pb-4">
+                      {/* Description in Spanish */}
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {group.translatedDescription}
                       </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
 
-              {filteredIssues.length === 0 && (
+                      {/* Recommendation block for the type of problem */}
+                      <div className="mt-3 bg-secondary/30 rounded-lg p-3 border border-border">
+                        <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                          <ChevronRight className="w-3.5 h-3.5 text-primary" />
+                          Recomendación de corrección general:
+                        </h4>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                          {group.recommendation}
+                        </p>
+                      </div>
+
+                      {/* Expandable occurrences section */}
+                      <div className="mt-4 border-t border-border/60 pt-3">
+                        <button
+                          onClick={() => toggleRuleExpanded(group.ruleId)}
+                          className="flex items-center justify-between w-full py-1.5 px-3 rounded-lg bg-muted hover:bg-muted/80 text-xs font-semibold text-foreground transition-all border border-border/80 cursor-pointer"
+                        >
+                          <span>
+                            {isExpanded ? 'Ocultar' : 'Mostrar'} las {group.instances.length} {group.instances.length === 1 ? 'ocurrencia encontrada' : 'ocurrencias encontradas'}
+                          </span>
+                          <span className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+                            {group.instances.length}
+                          </span>
+                        </button>
+
+                        {isExpanded && (
+                          <div className="flex flex-col gap-3 mt-3 pl-3 border-l-2 border-primary/40 transition-all duration-300">
+                            {group.instances.map((instance, instIdx) => (
+                              <div key={instance.id} className="bg-card p-3 rounded-lg border border-border/60 flex flex-col gap-2.5">
+                                <div className="flex items-center justify-between text-[10px] text-muted-foreground font-semibold flex-wrap gap-2">
+                                  <span>Instancia #{instIdx + 1}</span>
+                                  {instance.url && (
+                                    <span className="break-all font-mono">
+                                      URL: <a href={instance.url} target="_blank" rel="noreferrer" className="text-primary hover:underline">{instance.url}</a>
+                                    </span>
+                                  )}
+                                </div>
+                                {instance.selector && (
+                                  <div className="text-xs text-foreground/90">
+                                    <strong>Selector:</strong> <code className="font-mono text-primary text-[11px] bg-primary/5 px-1.5 py-0.5 rounded break-all">{instance.selector}</code>
+                                  </div>
+                                )}
+                                {instance.codeSnippet && (
+                                  <div>
+                                    <div className="flex items-center justify-between mb-1">
+                                      <label className="text-[9px] font-semibold text-muted-foreground">CÓDIGO INVOLUCRADO:</label>
+                                      <button
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(instance.codeSnippet || '');
+                                          alert('Código copiado al portapapeles');
+                                        }}
+                                        className="text-[9px] text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                                      >
+                                        <Copy className="w-2.5 h-2.5" /> Copiar Código
+                                      </button>
+                                    </div>
+                                    <pre className="bg-muted p-2 rounded text-[11px] font-mono text-foreground overflow-x-auto border border-border/50 max-h-32">
+                                      <code>{instance.codeSnippet}</code>
+                                    </pre>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+
+              {Object.keys(groupedIssues).length === 0 && (
                 <div className="text-center py-12 border border-dashed border-border rounded-xl">
                   <p className="text-muted-foreground text-sm">No se encontraron elementos de este tipo en la auditoría.</p>
                 </div>

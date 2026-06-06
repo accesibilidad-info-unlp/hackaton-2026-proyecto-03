@@ -7,7 +7,7 @@ import { createRequire } from 'module';
 import { getBrowserInstance } from './browser.manager';
 import { getAuditState, initAuditState, getStopConfig, checkStopSignals } from './audit.state';
 import { Finding } from '../../types/audit.types';
-import { getAffectedDisabilities } from '../utils/disabilityMapper';
+import { getAffectedDisabilities, translateRule } from '../utils/disabilityMapper';
 
 export const analyzePageTool = createTool({
   id: 'analyzePage',
@@ -28,6 +28,10 @@ export const analyzePageTool = createTool({
     let state;
     try {
       state = getAuditState();
+      // If the URL is not in the queue, it's a new audit crawl session. Reset the state.
+      if (!state.queue.some(item => item.url === url)) {
+        state = initAuditState(url);
+      }
     } catch (e) {
       // Initialize if not already initialized
       state = initAuditState(url);
@@ -111,6 +115,8 @@ export const analyzePageTool = createTool({
             const hashInput = `${violation.id}:${selector}:${url}`;
             const hash = crypto.createHash('sha256').update(hashInput).digest('hex').slice(0, 16);
 
+            const translation = translateRule(violation.id, violation.description);
+
             const finding: Finding = {
               id: hash,
               ruleId: violation.id,
@@ -122,6 +128,8 @@ export const analyzePageTool = createTool({
               helpUrl: violation.helpUrl,
               tags: violation.tags || [],
               disabilities: getAffectedDisabilities(violation.id, violation.tags || []),
+              translatedName: translation.name,
+              translatedDescription: translation.description,
             };
 
             state.findings.push(finding);
