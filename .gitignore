@@ -19,3 +19,11 @@ prisma/generated
 **/messages.js
 **/messages.mjs
 .env.demo
+
+node_modules
+.DS_Store
+dist
+*.local
+.vite-inspect
+.remote-assets
+components.d.ts
