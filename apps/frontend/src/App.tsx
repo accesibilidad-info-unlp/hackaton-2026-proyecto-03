@@ -348,8 +348,8 @@ const PRESETS = [
 
 interface AuditIssue {
   id: string
-  type: 'error' | 'warning' | 'success'
-  category: 'contraste' | 'images' | 'structure' | 'keyboard'
+  impact: 'critical' | 'serious' | 'moderate' | 'minor'
+  category: 'contraste' | 'images' | 'structure' | 'keyboard' | 'other'
   title: string
   description: string
   recommendation: string
@@ -358,10 +358,11 @@ interface AuditIssue {
 
 function App() {
   const [darkMode, setDarkMode] = useState<boolean>(false)
-  const [activeTab, setActiveTab] = useState<'all' | 'error' | 'warning' | 'success'>('all')
-  const [scanUrl, setScanUrl] = useState<string>('https://unlp.edu.ar')
+  const [activeTab, setActiveTab] = useState<'all' | 'critical' | 'serious' | 'moderate' | 'minor'>('all')
+  const [scanUrl, setScanUrl] = useState<string>('https://www.info.unlp.edu.ar/')
   const [isScanning, setIsScanning] = useState<boolean>(false)
-  const [score, setScore] = useState<number>(78)
+  const [score, setScore] = useState<number>(100)
+  const [summaryData, setSummaryData] = useState<any>(null)
   
   // Custom theme playground state
   const [customCss, setCustomCss] = useState<string>(themeCssText)
@@ -450,14 +451,83 @@ function App() {
     }
   }
 
-  const handleScan = (e: React.FormEvent) => {
+  const handleScan = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!scanUrl.trim()) return
     setIsScanning(true)
-    setTimeout(() => {
-      setIsScanning(false)
-      setScore(Math.floor(Math.random() * 18) + 80)
-    }, 1800)
+    
+    try {
+      const response = await fetch('/api/agents/accessibility-agent/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [`Please audit the following URL: ${scanUrl}`],
+          maxSteps: 30
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error de red: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data || !data.text) {
+        throw new Error('No se recibió texto de respuesta del agente.');
+      }
+
+      const reportText = data.text;
+      
+      // Intentar extraer el bloque JSON en caso de que el modelo haya incluido marcas Markdown (```json ... ```)
+      const jsonMatch = reportText.match(/\{[\s\S]*\}/);
+      const cleanJson = jsonMatch ? jsonMatch[0] : reportText;
+      const report = JSON.parse(cleanJson);
+
+      if (report && Array.isArray(report.violations)) {
+        const mappedIssues: AuditIssue[] = report.violations.map((violation: any) => {
+          let category: 'contraste' | 'images' | 'structure' | 'keyboard' | 'other' = 'other';
+          const ruleId = violation.ruleId.toLowerCase();
+          
+          if (ruleId.includes('color') || ruleId.includes('contrast')) {
+            category = 'contraste';
+          } else if (ruleId.includes('image') || ruleId.includes('alt') || ruleId.includes('aria-img') || ruleId.includes('button-name') || ruleId.includes('link-name')) {
+            category = 'images';
+          } else if (ruleId.includes('keyboard') || ruleId.includes('focus') || ruleId.includes('tabindex') || ruleId.includes('bypass')) {
+            category = 'keyboard';
+          } else if (ruleId.includes('heading') || ruleId.includes('region') || ruleId.includes('landmark')) {
+            category = 'structure';
+          }
+
+          return {
+            id: violation.id,
+            impact: violation.impact || 'moderate',
+            category,
+            title: violation.ruleId,
+            description: `${violation.description} (URL: ${violation.url}, Selector: ${violation.selector})`,
+            recommendation: `Consulte más detalles en: ${violation.helpUrl}`,
+            codeSnippet: violation.html
+          };
+        });
+
+        setIssues(mappedIssues);
+        setSummaryData({ ...report.summary, durationMs: report.durationMs });
+
+        // Calcular puntaje de accesibilidad dinámico
+        const criticalCount = report.summary.severityBreakdown.critical || 0;
+        const seriousCount = report.summary.severityBreakdown.serious || 0;
+        const moderateCount = report.summary.severityBreakdown.moderate || 0;
+        const minorCount = report.summary.severityBreakdown.minor || 0;
+        const calculatedScore = Math.max(0, 100 - (criticalCount * 8 + seriousCount * 5 + moderateCount * 2 + minorCount));
+        setScore(calculatedScore);
+      } else {
+        throw new Error('El reporte de auditoría no tiene el formato esperado.');
+      }
+    } catch (error: any) {
+      console.error('Error al realizar el escaneo:', error);
+      alert(`Hubo un error al ejecutar la auditoría de accesibilidad: ${error?.message || error}. Asegúrate de que el backend de Mastra esté corriendo.`);
+    } finally {
+      setIsScanning(false);
+    }
   }
 
   const handlePresetSelect = (presetName: string, css: string) => {
@@ -488,10 +558,10 @@ function App() {
     document.body.removeChild(element);
   }
 
-  const issues: AuditIssue[] = [
+  const [issues, setIssues] = useState<AuditIssue[]>([
     {
       id: '1',
-      type: 'error',
+      impact: 'critical',
       category: 'contraste',
       title: 'Contraste de texto insuficiente',
       description: 'El texto del menú superior (#navigation a) tiene una relación de contraste de 2.8:1 con el fondo. La norma WCAG 2.1 AA exige un mínimo de 4.5:1 para texto normal.',
@@ -500,7 +570,7 @@ function App() {
     },
     {
       id: '2',
-      type: 'error',
+      impact: 'serious',
       category: 'images',
       title: 'Imágenes sin atributo descriptivo alt',
       description: 'La imagen con la clase ".hero-banner-image" carece de un atributo "alt" o este se encuentra vacío. Esto impide que personas con discapacidad visual que utilicen lectores de pantalla comprendan el contenido visual.',
@@ -509,43 +579,27 @@ function App() {
     },
     {
       id: '3',
-      type: 'warning',
+      impact: 'moderate',
       category: 'structure',
       title: 'Saltos incorrectos en jerarquía de encabezados',
       description: 'Se detectó un salto directo desde un nivel de encabezado <h2> a uno <h4>. Las tecnologías de asistencia dependen de una estructura lógica (h1, h2, h3, h4) para facilitar la navegación.',
       recommendation: 'Modifique el nivel del elemento <h4> a un <h3>, o bien agregue un encabezado <h3> intermedio si la sección requiere estructuración.',
-      codeSnippet: '<h2>Noticias Recientes</h2>\n...\n<h4>Resultados de Exámenes</h4>'
+      codeSnippet: '<h2>Noticias Recientes</h2>\\n...\\n<h4>Resultados de Exámenes</h4>'
     },
     {
       id: '4',
-      type: 'warning',
+      impact: 'minor',
       category: 'keyboard',
       title: 'Elementos enfocables sin contorno visible (Focus Outline)',
       description: 'El botón de búsqueda (.search-btn) anula el contorno visible al recibir el foco del teclado (:focus { outline: none }). Esto desorienta a los usuarios que navegan mediante el tabulador.',
       recommendation: 'Remueva el estilo outline: none o proporcione una alternativa visual de foco altamente visible usando outline o border contrastados.',
       codeSnippet: '.search-btn:focus { outline: none; }'
-    },
-    {
-      id: '5',
-      type: 'success',
-      category: 'keyboard',
-      title: 'Navegación mediante teclado soportada',
-      description: 'Los menús desplegables principales son completamente accesibles con el teclado mediante las teclas Tab, Flechas e Intro.',
-      recommendation: 'Ninguna acción requerida. Mantenga la estructura de eventos de teclado estándar.'
-    },
-    {
-      id: '6',
-      type: 'success',
-      category: 'structure',
-      title: 'Atributos ARIA válidos y consistentes',
-      description: 'Se están utilizando correctamente los roles ARIA (role="main", role="navigation", role="dialog") ayudando a estructurar la página semánticamente para lectores de pantalla.',
-      recommendation: 'Mantenga el uso correcto de los roles de referencia HTML5 estándar.'
     }
-  ]
+  ])
 
   const filteredIssues = issues.filter(issue => {
     if (activeTab === 'all') return true
-    return issue.type === activeTab
+    return issue.impact === activeTab
   })
 
   return (
@@ -795,24 +849,45 @@ function App() {
                 <p className="text-xs text-muted-foreground mt-0.5">Analizado para: <span className="font-mono text-foreground">{scanUrl}</span></p>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 my-4">
-                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-center">
-                  <span className="text-2xl font-extrabold text-destructive block leading-none">2</span>
-                  <span className="text-[10px] font-semibold text-destructive/80 uppercase tracking-wider block mt-1">Errores</span>
+              <div className="grid grid-cols-4 gap-3 my-4">
+                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-center flex flex-col justify-center">
+                  <span className="text-xl font-extrabold text-destructive block leading-none">
+                    {summaryData?.severityBreakdown?.critical ?? issues.filter(i => i.impact === 'critical').length}
+                  </span>
+                  <span className="text-[9px] font-bold text-destructive/80 uppercase tracking-wider block mt-1.5">Críticos</span>
                 </div>
-                <div className="bg-secondary/50 border border-border rounded-xl p-3 text-center">
-                  <span className="text-2xl font-extrabold text-foreground block leading-none">2</span>
-                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block mt-1">Avisos</span>
+                <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
+                  <span className="text-xl font-extrabold text-orange-500 block leading-none">
+                    {summaryData?.severityBreakdown?.serious ?? issues.filter(i => i.impact === 'serious').length}
+                  </span>
+                  <span className="text-[9px] font-bold text-orange-500/80 uppercase tracking-wider block mt-1.5">Serios</span>
                 </div>
-                <div className="bg-primary/10 border border-primary/20 rounded-xl p-3 text-center">
-                  <span className="text-2xl font-extrabold text-primary block leading-none">2</span>
-                  <span className="text-[10px] font-semibold text-primary/80 uppercase tracking-wider block mt-1">Pasados</span>
+                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
+                  <span className="text-xl font-extrabold text-yellow-500 block leading-none">
+                    {summaryData?.severityBreakdown?.moderate ?? issues.filter(i => i.impact === 'moderate').length}
+                  </span>
+                  <span className="text-[9px] font-bold text-yellow-500/80 uppercase tracking-wider block mt-1.5">Moderad.</span>
+                </div>
+                <div className="bg-secondary/50 border border-border rounded-xl p-3 text-center flex flex-col justify-center">
+                  <span className="text-xl font-extrabold text-foreground block leading-none">
+                    {summaryData?.severityBreakdown?.minor ?? issues.filter(i => i.impact === 'minor').length}
+                  </span>
+                  <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block mt-1.5">Menores</span>
                 </div>
               </div>
 
-              <div className="text-xs text-muted-foreground flex items-center gap-1">
-                <FileText className="w-3.5 h-3.5 text-primary" />
-                <span>Normas aplicadas: <strong>WCAG 2.1 Nivel AA</strong></span>
+              <div className="text-xs text-muted-foreground flex flex-col gap-2 mt-auto">
+                <div className="flex items-center gap-1.5">
+                  <FileText className="w-4 h-4 text-primary" />
+                  <span>Normas aplicadas: <strong>WCAG 2.1 Nivel AA</strong></span>
+                </div>
+                {summaryData && (
+                  <div className="flex items-center gap-4 mt-1 border-t border-border/50 pt-2.5">
+                    <span className="flex items-center gap-1.5 font-medium"><Globe className="w-3.5 h-3.5 text-primary/70"/> {summaryData.totalPagesVisited} pág.</span>
+                    <span className="flex items-center gap-1.5 font-medium"><Activity className="w-3.5 h-3.5 text-primary/70"/> {summaryData.totalViolations} violaciones</span>
+                    {summaryData.durationMs && <span className="flex items-center gap-1.5 font-medium"><RefreshCw className="w-3.5 h-3.5 text-primary/70"/> {(summaryData.durationMs / 1000).toFixed(1)}s</span>}
+                  </div>
+                )}
               </div>
             </Card>
           </div>
@@ -823,7 +898,7 @@ function App() {
               <h3 className="font-bold text-base text-foreground">Detalle de Hallazgos</h3>
               
               {/* Tabs */}
-              <div className="flex bg-muted p-1 rounded-lg border border-border">
+              <div className="flex bg-muted p-1 rounded-lg border border-border flex-wrap gap-1">
                 <button
                   onClick={() => setActiveTab('all')}
                   className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer ${
@@ -835,34 +910,44 @@ function App() {
                   Todos ({issues.length})
                 </button>
                 <button
-                  onClick={() => setActiveTab('error')}
+                  onClick={() => setActiveTab('critical')}
                   className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeTab === 'error'
+                    activeTab === 'critical'
                       ? 'bg-destructive text-destructive-foreground shadow-sm font-bold'
                       : 'text-muted-foreground hover:text-destructive'
                   }`}
                 >
-                  Errores (2)
+                  Críticos ({issues.filter(i => i.impact === 'critical').length})
                 </button>
                 <button
-                  onClick={() => setActiveTab('warning')}
+                  onClick={() => setActiveTab('serious')}
                   className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeTab === 'warning'
+                    activeTab === 'serious'
+                      ? 'bg-orange-500 text-white shadow-sm border border-orange-500/20 font-bold'
+                      : 'text-muted-foreground hover:text-orange-500'
+                  }`}
+                >
+                  Serios ({issues.filter(i => i.impact === 'serious').length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('moderate')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                    activeTab === 'moderate'
+                      ? 'bg-yellow-500 text-white shadow-sm border border-yellow-500/20 font-bold'
+                      : 'text-muted-foreground hover:text-yellow-500'
+                  }`}
+                >
+                  Moderados ({issues.filter(i => i.impact === 'moderate').length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('minor')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                    activeTab === 'minor'
                       ? 'bg-secondary text-secondary-foreground shadow-sm border border-border font-bold'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  Avisos (2)
-                </button>
-                <button
-                  onClick={() => setActiveTab('success')}
-                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                    activeTab === 'success'
-                      ? 'bg-primary text-primary-foreground shadow-sm font-bold'
-                      : 'text-muted-foreground hover:text-primary'
-                  }`}
-                >
-                  Pasados (2)
+                  Menores ({issues.filter(i => i.impact === 'minor').length})
                 </button>
               </div>
             </div>
@@ -874,19 +959,24 @@ function App() {
                   <CardHeader className="pb-3 flex-row items-start justify-between gap-4">
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
-                        {issue.type === 'error' && (
+                        {issue.impact === 'critical' && (
                           <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-2 py-0.5 rounded-md border border-destructive/20 flex items-center gap-1">
-                            <ShieldAlert className="w-3 h-3" /> Error Crítico
+                            <ShieldAlert className="w-3 h-3" /> Crítico
                           </span>
                         )}
-                        {issue.type === 'warning' && (
+                        {issue.impact === 'serious' && (
+                          <span className="bg-orange-500/10 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-500/20 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" /> Serio
+                          </span>
+                        )}
+                        {issue.impact === 'moderate' && (
+                          <span className="bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-yellow-500/20 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" /> Moderado
+                          </span>
+                        )}
+                        {issue.impact === 'minor' && (
                           <span className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border flex items-center gap-1">
-                            <AlertTriangle className="w-3 h-3 text-secondary-foreground" /> Aviso
-                          </span>
-                        )}
-                        {issue.type === 'success' && (
-                          <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-md border border-primary/20 flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3 text-primary" /> Conforme
+                            <Info className="w-3 h-3" /> Menor
                           </span>
                         )}
                         <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
