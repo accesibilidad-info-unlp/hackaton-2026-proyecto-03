@@ -364,7 +364,7 @@ function App() {
   const [score, setScore] = useState<number>(100)
   const [summaryData, setSummaryData] = useState<any>(null)
   const [hasScanned, setHasScanned] = useState<boolean>(false)
-  
+
   // Custom theme playground state
   const [customCss, setCustomCss] = useState<string>(themeCssText)
   const [isPreviewActive, setIsPreviewActive] = useState<boolean>(false)
@@ -394,12 +394,12 @@ function App() {
     const loadFont = (fontName: string) => {
       if (!fontName) return;
       const systemFonts = [
-        'sans-serif', 'serif', 'monospace', 'system-ui', '-apple-system', 
+        'sans-serif', 'serif', 'monospace', 'system-ui', '-apple-system',
         'blinkmacsystemfont', 'segoe ui', 'roboto', 'helvetica', 'arial'
       ];
       const normalizedFont = fontName.toLowerCase();
       if (systemFonts.includes(normalizedFont)) return;
-      
+
       const linkId = 'dynamic-google-font';
       let link = document.getElementById(linkId) as HTMLLinkElement;
       if (!link) {
@@ -408,7 +408,7 @@ function App() {
         link.rel = 'stylesheet';
         document.head.appendChild(link);
       }
-      
+
       // Load Google Fonts dynamically
       const fontUrlName = fontName.replace(/\s+/g, '+');
       link.href = `https://fonts.googleapis.com/css2?family=${fontUrlName}:wght@300;400;500;600;700;800&display=swap`;
@@ -456,7 +456,7 @@ function App() {
     e.preventDefault()
     if (!scanUrl.trim()) return
     setIsScanning(true)
-    
+
     try {
       const response = await fetch('/api/agents/accessibility-agent/generate', {
         method: 'POST',
@@ -472,13 +472,13 @@ function App() {
       }
 
       const data = await response.json();
-      
+
       if (!data || !data.text) {
         throw new Error('No se recibió texto de respuesta del agente.');
       }
 
       const reportText = data.text;
-      
+
       // Intentar extraer el bloque JSON en caso de que el modelo haya incluido marcas Markdown (```json ... ```)
       const jsonMatch = reportText.match(/\{[\s\S]*\}/);
       const cleanJson = jsonMatch ? jsonMatch[0] : reportText;
@@ -488,7 +488,7 @@ function App() {
         const mappedIssues: AuditIssue[] = report.violations.map((violation: any) => {
           let category: 'contraste' | 'images' | 'structure' | 'keyboard' | 'other' = 'other';
           const ruleId = violation.ruleId.toLowerCase();
-          
+
           if (ruleId.includes('color') || ruleId.includes('contrast')) {
             category = 'contraste';
           } else if (ruleId.includes('image') || ruleId.includes('alt') || ruleId.includes('aria-img') || ruleId.includes('button-name') || ruleId.includes('link-name')) {
@@ -552,7 +552,7 @@ function App() {
 
   const downloadThemeFile = () => {
     const element = document.createElement("a");
-    const file = new Blob([customCss], {type: 'text/css'});
+    const file = new Blob([customCss], { type: 'text/css' });
     element.href = URL.createObjectURL(file);
     element.download = "theme.css";
     document.body.appendChild(element);
@@ -595,14 +595,6 @@ function App() {
             >
               {darkMode ? <Sun className="w-4.5 h-4.5 text-primary" /> : <Moon className="w-4.5 h-4.5 text-primary" />}
             </button>
-            <a 
-              href="https://tweakcn.com/editor/theme" 
-              target="_blank" 
-              rel="noreferrer"
-              className="bg-primary text-primary-foreground hover:opacity-90 px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5 transition-all duration-200 shadow-md shadow-primary/20 cursor-pointer"
-            >
-              TweakCN Editor <ExternalLink className="w-3.5 h-3.5" />
-            </a>
           </div>
         </div>
       </header>
@@ -667,276 +659,263 @@ function App() {
           </div>
         </main>
       ) : (
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* Left column: Controls */}
-          <div className="lg:col-span-4 flex flex-col gap-8 sticky top-24 self-start">
-            
-            {/* Scan Url Card */}
-            <Card className="shadow-lg border-border">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Globe className="w-5 h-5 text-primary" />
-                  Auditar Sitio Web
-                </CardTitle>
-                <CardDescription>
-                  Ingrese la URL que desea escanear para verificar el nivel de accesibilidad.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleScan} className="flex gap-2">
-                  <div className="relative flex-grow">
-                    <input
-                      type="url"
-                      value={scanUrl}
-                      onChange={(e) => setScanUrl(e.target.value)}
-                      required
-                      placeholder="https://ejemplo.com"
-                      className="w-full pl-3 pr-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground transition-all"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isScanning}
-                    className="bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 cursor-pointer"
-                  >
-                    {isScanning ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-primary-foreground" />
-                        Analizando...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4 text-primary-foreground" />
-                        Escanear
-                      </>
-                    )}
-                  </button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex flex-col gap-8">
 
-          {/* Right column: Audit Results Dashboard */}
-          <div className="lg:col-span-8 flex flex-col gap-8">
-            
-            {/* Main Score and Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
-              {/* Score circle card */}
-              <Card className="col-span-1 shadow-lg border-border flex flex-col items-center justify-center p-6 text-center">
-                <div className="relative w-28 h-28 flex items-center justify-center">
-                  <svg className="absolute w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="42"
-                      fill="transparent"
-                      stroke="var(--border)"
-                      strokeWidth="8"
-                      className="stroke-border"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="42"
-                      fill="transparent"
-                      stroke="var(--primary)"
-                      strokeWidth="8"
-                      strokeDasharray={`${2 * Math.PI * 42}`}
-                      strokeDashoffset={`${2 * Math.PI * 42 * (1 - score / 100)}`}
-                      strokeLinecap="round"
-                      className="stroke-primary transition-all duration-1000 ease-in-out"
-                    />
-                  </svg>
-                  <span className="text-3xl font-extrabold text-foreground tracking-tight">{score}</span>
-                </div>
-                <h3 className="font-bold text-sm text-foreground mt-4 leading-none">Puntaje Global</h3>
-                <p className="text-xs text-muted-foreground mt-1">Cumplimiento WCAG 2.1</p>
-              </Card>
-
-              {/* General metrics summary */}
-              <Card className="col-span-1 md:col-span-2 shadow-lg border-border p-6 flex flex-col justify-between">
+          {/* Fila 1: Compact horizontal Audit Bar */}
+          <Card className="shadow-md border-border bg-card/60 backdrop-blur-md">
+            <CardContent className="py-4 px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2.5 shrink-0">
+                <Globe className="w-5 h-5 text-primary" />
                 <div>
-                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Activity className="w-4.5 h-4.5 text-primary" />
-                    Resumen de Auditoría
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">Analizado para: <span className="font-mono text-foreground">{scanUrl}</span></p>
-                </div>
-
-                <div className="grid grid-cols-4 gap-3 my-4">
-                  <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-center flex flex-col justify-center">
-                    <span className="text-xl font-extrabold text-destructive block leading-none">
-                      {summaryData?.severityBreakdown?.critical ?? issues.filter(i => i.impact === 'critical').length}
-                    </span>
-                    <span className="text-[9px] font-bold text-destructive/80 uppercase tracking-wider block mt-1.5">Críticos</span>
-                  </div>
-                  <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
-                    <span className="text-xl font-extrabold text-orange-500 block leading-none">
-                      {summaryData?.severityBreakdown?.serious ?? issues.filter(i => i.impact === 'serious').length}
-                    </span>
-                    <span className="text-[9px] font-bold text-orange-500/80 uppercase tracking-wider block mt-1.5">Serios</span>
-                  </div>
-                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
-                    <span className="text-xl font-extrabold text-yellow-500 block leading-none">
-                      {summaryData?.severityBreakdown?.moderate ?? issues.filter(i => i.impact === 'moderate').length}
-                    </span>
-                    <span className="text-[9px] font-bold text-yellow-500/80 uppercase tracking-wider block mt-1.5">Moderad.</span>
-                  </div>
-                  <div className="bg-secondary/50 border border-border rounded-xl p-3 text-center flex flex-col justify-center">
-                    <span className="text-xl font-extrabold text-foreground block leading-none">
-                      {summaryData?.severityBreakdown?.minor ?? issues.filter(i => i.impact === 'minor').length}
-                    </span>
-                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block mt-1.5">Menores</span>
-                  </div>
-                </div>
-
-                <div className="text-xs text-muted-foreground flex flex-col gap-2 mt-auto">
-                  <div className="flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-primary" />
-                    <span>Normas aplicadas: <strong>WCAG 2.1 Nivel AA</strong></span>
-                  </div>
-                  {summaryData && (
-                    <div className="flex items-center gap-4 mt-1 border-t border-border/50 pt-2.5">
-                      <span className="flex items-center gap-1.5 font-medium"><Globe className="w-3.5 h-3.5 text-primary/70"/> {summaryData.totalPagesVisited} pág.</span>
-                      <span className="flex items-center gap-1.5 font-medium"><Activity className="w-3.5 h-3.5 text-primary/70"/> {summaryData.totalViolations} violaciones</span>
-                      {summaryData.durationMs && <span className="flex items-center gap-1.5 font-medium"><RefreshCw className="w-3.5 h-3.5 text-primary/70"/> {(summaryData.durationMs / 1000).toFixed(1)}s</span>}
-                    </div>
-                  )}
-                </div>
-              </Card>
-            </div>
-
-            {/* Filtering and list of issues */}
-            <div>
-              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                <h3 className="font-bold text-base text-foreground">Detalle de Hallazgos</h3>
-                
-                {/* Tabs */}
-                <div className="flex bg-muted p-1 rounded-lg border border-border flex-wrap gap-1">
-                  <button
-                    onClick={() => setActiveTab('all')}
-                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer ${
-                      activeTab === 'all'
-                        ? 'bg-card text-foreground shadow-sm font-bold'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Todos ({issues.length})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('critical')}
-                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                      activeTab === 'critical'
-                        ? 'bg-destructive text-destructive-foreground shadow-sm font-bold'
-                        : 'text-muted-foreground hover:text-destructive'
-                    }`}
-                  >
-                    Críticos ({issues.filter(i => i.impact === 'critical').length})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('serious')}
-                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                      activeTab === 'serious'
-                        ? 'bg-orange-500 text-white shadow-sm border border-orange-500/20 font-bold'
-                        : 'text-muted-foreground hover:text-orange-500'
-                    }`}
-                  >
-                    Serios ({issues.filter(i => i.impact === 'serious').length})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('moderate')}
-                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                      activeTab === 'moderate'
-                        ? 'bg-yellow-500 text-white shadow-sm border border-yellow-500/20 font-bold'
-                        : 'text-muted-foreground hover:text-yellow-500'
-                    }`}
-                  >
-                    Moderados ({issues.filter(i => i.impact === 'moderate').length})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('minor')}
-                    className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${
-                      activeTab === 'minor'
-                        ? 'bg-secondary text-secondary-foreground shadow-sm border border-border font-bold'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Menores ({issues.filter(i => i.impact === 'minor').length})
-                  </button>
+                  <h2 className="font-bold text-sm text-foreground">Auditar Sitio Web</h2>
+                  <p className="text-xs text-muted-foreground">Analizar nivel de accesibilidad</p>
                 </div>
               </div>
 
-              {/* List */}
-              <div className="flex flex-col gap-4">
-                {filteredIssues.map((issue) => (
-                  <Card key={issue.id} className="shadow-md hover:shadow-lg transition-all duration-200 border-border">
-                    <CardHeader className="pb-3 flex-row items-start justify-between gap-4">
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                          {issue.impact === 'critical' && (
-                            <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-2 py-0.5 rounded-md border border-destructive/20 flex items-center gap-1">
-                              <ShieldAlert className="w-3 h-3" /> Crítico
-                            </span>
-                          )}
-                          {issue.impact === 'serious' && (
-                            <span className="bg-orange-500/10 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-500/20 flex items-center gap-1">
-                              <AlertTriangle className="w-3 h-3" /> Serio
-                            </span>
-                          )}
-                          {issue.impact === 'moderate' && (
-                            <span className="bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-yellow-500/20 flex items-center gap-1">
-                              <AlertTriangle className="w-3 h-3" /> Moderado
-                            </span>
-                          )}
-                          {issue.impact === 'minor' && (
-                            <span className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border flex items-center gap-1">
-                              <Info className="w-3 h-3" /> Menor
-                            </span>
-                          )}
-                          <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
-                            Categoría: {issue.category}
-                          </span>
-                        </div>
-                        <CardTitle className="text-base font-bold text-foreground mt-2 leading-tight">
-                          {issue.title}
-                        </CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pb-4">
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {issue.description}
-                      </p>
+              <form onSubmit={handleScan} className="flex-grow flex gap-3 max-w-3xl w-full">
+                <div className="relative flex-grow">
+                  <input
+                    type="url"
+                    value={scanUrl}
+                    onChange={(e) => setScanUrl(e.target.value)}
+                    required
+                    placeholder="https://ejemplo.com"
+                    className="w-full pl-3 pr-3 py-2.5 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground transition-all"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isScanning}
+                  className="bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-md shadow-primary/10 shrink-0"
+                >
+                  {isScanning ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin text-primary-foreground" />
+                      Analizando...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 text-primary-foreground" />
+                      Escanear
+                    </>
+                  )}
+                </button>
+              </form>
+            </CardContent>
+          </Card>
 
-                      {issue.codeSnippet && (
-                        <div className="mt-3">
-                          <label className="text-[10px] font-semibold text-muted-foreground block mb-1">CÓDIGO INVOLUCRADO:</label>
-                          <pre className="bg-muted p-2.5 rounded-lg text-xs font-mono text-foreground overflow-x-auto border border-border">
-                            <code>{issue.codeSnippet}</code>
-                          </pre>
-                        </div>
-                      )}
+          {/* Fila 2: Dos columnas (Puntaje Global y Resumen de Auditoría) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-                      <div className="mt-4 bg-secondary/30 rounded-lg p-3 border border-border">
-                        <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                          <ChevronRight className="w-3.5 h-3.5 text-primary" />
-                          Recomendación de corrección:
-                        </h4>
-                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                          {issue.recommendation}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+            {/* Score circle card (col-span-1) */}
+            <Card className="shadow-lg border-border flex flex-col items-center justify-center p-6 text-center">
+              <div className="relative w-28 h-28 flex items-center justify-center">
+                <svg className="absolute w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="42"
+                    fill="transparent"
+                    stroke="var(--border)"
+                    strokeWidth="8"
+                    className="stroke-border"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="42"
+                    fill="transparent"
+                    stroke="var(--primary)"
+                    strokeWidth="8"
+                    strokeDasharray={`${2 * Math.PI * 42}`}
+                    strokeDashoffset={`${2 * Math.PI * 42 * (1 - score / 100)}`}
+                    strokeLinecap="round"
+                    className="stroke-primary transition-all duration-1000 ease-in-out"
+                  />
+                </svg>
+                <span className="text-3xl font-extrabold text-foreground tracking-tight">{score}</span>
+              </div>
+              <h3 className="font-bold text-sm text-foreground mt-4 leading-none">Puntaje Global</h3>
+              <p className="text-xs text-muted-foreground mt-1">Cumplimiento WCAG 2.1</p>
+            </Card>
 
-                {filteredIssues.length === 0 && (
-                  <div className="text-center py-12 border border-dashed border-border rounded-xl">
-                    <p className="text-muted-foreground text-sm">No se encontraron elementos de este tipo en la auditoría.</p>
+            {/* General metrics summary (col-span-2) */}
+            <Card className="shadow-lg border-border p-6 flex flex-col justify-between md:col-span-2">
+              <div>
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <Activity className="w-4.5 h-4.5 text-primary" />
+                  Resumen de Auditoría
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5 break-all">Analizado para: <span className="font-mono text-foreground">{scanUrl}</span></p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
+                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 text-center flex flex-col justify-center">
+                  <span className="text-xl font-extrabold text-destructive block leading-none">
+                    {summaryData?.severityBreakdown?.critical ?? issues.filter(i => i.impact === 'critical').length}
+                  </span>
+                  <span className="text-[9px] font-bold text-destructive/80 uppercase tracking-wider block mt-1.5">Críticos</span>
+                </div>
+                <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
+                  <span className="text-xl font-extrabold text-orange-500 block leading-none">
+                    {summaryData?.severityBreakdown?.serious ?? issues.filter(i => i.impact === 'serious').length}
+                  </span>
+                  <span className="text-[9px] font-bold text-orange-500/80 uppercase tracking-wider block mt-1.5">Serios</span>
+                </div>
+                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3 text-center flex flex-col justify-center">
+                  <span className="text-xl font-extrabold text-yellow-500 block leading-none">
+                    {summaryData?.severityBreakdown?.moderate ?? issues.filter(i => i.impact === 'moderate').length}
+                  </span>
+                  <span className="text-[9px] font-bold text-yellow-500/80 uppercase tracking-wider block mt-1.5">Moderad.</span>
+                </div>
+                <div className="bg-secondary/50 border border-border rounded-xl p-3 text-center flex flex-col justify-center">
+                  <span className="text-xl font-extrabold text-foreground block leading-none">
+                    {summaryData?.severityBreakdown?.minor ?? issues.filter(i => i.impact === 'minor').length}
+                  </span>
+                  <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider block mt-1.5">Menores</span>
+                </div>
+              </div>
+
+              <div className="text-xs text-muted-foreground flex flex-col gap-2 mt-auto">
+                <div className="flex items-center gap-1.5">
+                  <FileText className="w-4 h-4 text-primary shrink-0" />
+                  <span>Normas aplicadas: <strong>WCAG 2.1 Nivel AA</strong></span>
+                </div>
+                {summaryData && (
+                  <div className="flex items-center gap-4 mt-1 border-t border-border/50 pt-2.5">
+                    <span className="flex items-center gap-1.5 font-medium"><Globe className="w-3.5 h-3.5 text-primary/70" /> {summaryData.totalPagesVisited} pág.</span>
+                    <span className="flex items-center gap-1.5 font-medium"><Activity className="w-3.5 h-3.5 text-primary/70" /> {summaryData.totalViolations} violaciones</span>
+                    {summaryData.durationMs && <span className="flex items-center gap-1.5 font-medium"><RefreshCw className="w-3.5 h-3.5 text-primary/70" /> {(summaryData.durationMs / 1000).toFixed(1)}s</span>}
                   </div>
                 )}
               </div>
+            </Card>
+          </div>
+
+          {/* Fila 3: Detalle de Hallazgos (Ancho Completo) */}
+          <div className="flex flex-col gap-6">
+
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <h3 className="font-bold text-base text-foreground">Detalle de Hallazgos</h3>
+
+              {/* Tabs */}
+              <div className="flex bg-muted p-1 rounded-lg border border-border flex-wrap gap-1">
+                <button
+                  onClick={() => setActiveTab('all')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer ${activeTab === 'all'
+                    ? 'bg-card text-foreground shadow-sm font-bold'
+                    : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                >
+                  Todos ({issues.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('critical')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${activeTab === 'critical'
+                    ? 'bg-destructive text-destructive-foreground shadow-sm font-bold'
+                    : 'text-muted-foreground hover:text-destructive'
+                    }`}
+                >
+                  Críticos ({issues.filter(i => i.impact === 'critical').length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('serious')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${activeTab === 'serious'
+                    ? 'bg-orange-500 text-white shadow-sm border border-orange-500/20 font-bold'
+                    : 'text-muted-foreground hover:text-orange-500'
+                    }`}
+                >
+                  Serios ({issues.filter(i => i.impact === 'serious').length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('moderate')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${activeTab === 'moderate'
+                    ? 'bg-yellow-500 text-white shadow-sm border border-yellow-500/20 font-bold'
+                    : 'text-muted-foreground hover:text-yellow-500'
+                    }`}
+                >
+                  Moderados ({issues.filter(i => i.impact === 'moderate').length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('minor')}
+                  className={`text-xs px-3 py-1.5 rounded-md font-semibold transition-all cursor-pointer flex items-center gap-1 ${activeTab === 'minor'
+                    ? 'bg-secondary text-secondary-foreground shadow-sm border border-border font-bold'
+                    : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                >
+                  Menores ({issues.filter(i => i.impact === 'minor').length})
+                </button>
+              </div>
+            </div>
+
+            {/* List */}
+            <div className="flex flex-col gap-4">
+              {filteredIssues.map((issue) => (
+                <Card key={issue.id} className="shadow-md hover:shadow-lg transition-all duration-200 border-border">
+                  <CardHeader className="pb-3 flex-row items-start justify-between gap-4">
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        {issue.impact === 'critical' && (
+                          <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-2 py-0.5 rounded-md border border-destructive/20 flex items-center gap-1">
+                            <ShieldAlert className="w-3 h-3" /> Crítico
+                          </span>
+                        )}
+                        {issue.impact === 'serious' && (
+                          <span className="bg-orange-500/10 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-500/20 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" /> Serio
+                          </span>
+                        )}
+                        {issue.impact === 'moderate' && (
+                          <span className="bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-yellow-500/20 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3" /> Moderado
+                          </span>
+                        )}
+                        {issue.impact === 'minor' && (
+                          <span className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border flex items-center gap-1">
+                            <Info className="w-3 h-3" /> Menor
+                          </span>
+                        )}
+                        <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
+                          Categoría: {issue.category}
+                        </span>
+                      </div>
+                      <CardTitle className="text-base font-bold text-foreground mt-2 leading-tight">
+                        {issue.title}
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pb-4">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {issue.description}
+                    </p>
+
+                    {issue.codeSnippet && (
+                      <div className="mt-3">
+                        <label className="text-[10px] font-semibold text-muted-foreground block mb-1">CÓDIGO INVOLUCRADO:</label>
+                        <pre className="bg-muted p-2.5 rounded-lg text-xs font-mono text-foreground overflow-x-auto border border-border">
+                          <code>{issue.codeSnippet}</code>
+                        </pre>
+                      </div>
+                    )}
+
+                    <div className="mt-4 bg-secondary/30 rounded-lg p-3 border border-border">
+                      <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <ChevronRight className="w-3.5 h-3.5 text-primary" />
+                        Recomendación de corrección:
+                      </h4>
+                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                        {issue.recommendation}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+
+              {filteredIssues.length === 0 && (
+                <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                  <p className="text-muted-foreground text-sm">No se encontraron elementos de este tipo en la auditoría.</p>
+                </div>
+              )}
             </div>
           </div>
         </main>
