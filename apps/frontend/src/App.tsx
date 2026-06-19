@@ -1,17 +1,13 @@
 import { useState, useEffect } from 'react'
 import {
   ShieldAlert,
-  CheckCircle2,
   AlertTriangle,
   Activity,
   FileText,
   Sun,
   Moon,
-  Download,
-  ExternalLink,
   RefreshCw,
   Globe,
-  Palette,
   Check,
   Copy,
   ChevronRight,
@@ -28,328 +24,40 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
-  CardFooter,
+  CardContent
 } from "@/components/ui/card"
 
-// Import current theme.css raw content from disk using Vite raw loader
-import themeCssText from './theme.css?raw'
-
-// Solar Dusk theme preset (matching TweakCN export)
-const SOLAR_DUSK_CSS = `@import "tailwindcss";
-
-@custom-variant dark (&:is(.dark *));
-
-:root {
-  --background: oklch(0.9885 0.0057 84.5659);
-  --foreground: oklch(0.3660 0.0251 49.6085);
-  --card: oklch(0.9686 0.0091 78.2818);
-  --card-foreground: oklch(0.3660 0.0251 49.6085);
-  --popover: oklch(0.9686 0.0091 78.2818);
-  --popover-foreground: oklch(0.3660 0.0251 49.6085);
-  --primary: oklch(0.5553 0.1455 48.9975);
-  --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.8276 0.0752 74.4400);
-  --secondary-foreground: oklch(0.4444 0.0096 73.6390);
-  --muted: oklch(0.9363 0.0218 83.2637);
-  --muted-foreground: oklch(0.5534 0.0116 58.0708);
-  --accent: oklch(0.9000 0.0500 74.9889);
-  --accent-foreground: oklch(0.4444 0.0096 73.6390);
-  --destructive: oklch(0.4437 0.1613 26.8994);
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.8866 0.0404 89.6994);
-  --input: oklch(0.8866 0.0404 89.6994);
-  --ring: oklch(0.5553 0.1455 48.9975);
-  --font-sans: Oxanium, sans-serif;
-  --radius: 0.5rem;
+interface AuditViolation {
+  id: string
+  impact?: 'critical' | 'serious' | 'moderate' | 'minor'
+  ruleId: string
+  description: string
+  helpUrl?: string
+  html?: string
+  disabilities?: string[]
+  translatedName?: string
+  translatedDescription?: string
+  url?: string
+  selector?: string
 }
 
-.dark {
-  --background: oklch(0.2161 0.0061 56.0434);
-  --foreground: oklch(0.9699 0.0013 106.4238);
-  --card: oklch(0.2685 0.0063 34.2976);
-  --card-foreground: oklch(0.9699 0.0013 106.4238);
-  --popover: oklch(0.2685 0.0063 34.2976);
-  --popover-foreground: oklch(0.9699 0.0013 106.4238);
-  --primary: oklch(0.7049 0.1867 47.6044);
-  --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.4444 0.0096 73.6390);
-  --secondary-foreground: oklch(0.9232 0.0026 48.7171);
-  --muted: oklch(0.2330 0.0073 67.4563);
-  --muted-foreground: oklch(0.7161 0.0091 56.2590);
-  --accent: oklch(0.3598 0.0497 229.3202);
-  --accent-foreground: oklch(0.9232 0.0026 48.7171);
-  --destructive: oklch(0.5771 0.2152 27.3250);
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.3741 0.0087 67.5582);
-  --input: oklch(0.3741 0.0087 67.5582);
-  --ring: oklch(0.7049 0.1867 47.6044);
+interface AuditSummary {
+  totalPagesVisited: number
+  totalViolations: number
+  durationMs?: number
+  severityBreakdown: {
+    critical: number
+    serious: number
+    moderate: number
+    minor: number
+  }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --font-sans: var(--font-sans);
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-}`;
-
-// Plus Jakarta Sans default theme
-const DEFAULT_VIOLET_CSS = `@import "tailwindcss";
-
-@custom-variant dark (&:is(.dark *));
-
-:root {
-  --background: oklch(0.99 0.003 240);
-  --foreground: oklch(0.1 0.01 240);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.1 0.01 240);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.1 0.01 240);
-  --primary: oklch(0.58 0.23 273);
-  --primary-foreground: oklch(0.98 0.01 240);
-  --secondary: oklch(0.96 0.01 240);
-  --secondary-foreground: oklch(0.1 0.01 240);
-  --muted: oklch(0.96 0.01 240);
-  --muted-foreground: oklch(0.5 0.02 240);
-  --accent: oklch(0.96 0.01 240);
-  --accent-foreground: oklch(0.1 0.01 240);
-  --destructive: oklch(0.6 0.25 0);
-  --destructive-foreground: oklch(0.98 0.01 240);
-  --border: oklch(0.92 0.01 240);
-  --input: oklch(0.92 0.01 240);
-  --ring: oklch(0.58 0.23 273);
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
-  --radius: 0.75rem;
+interface AuditReport {
+  summary: AuditSummary;
+  violations: AuditViolation[];
+  durationMs?: number;
 }
-
-.dark {
-  --background: oklch(0.15 0.01 240);
-  --foreground: oklch(0.98 0.01 240);
-  --card: oklch(0.15 0.01 240);
-  --card-foreground: oklch(0.98 0.01 240);
-  --popover: oklch(0.15 0.01 240);
-  --popover-foreground: oklch(0.98 0.01 240);
-  --primary: oklch(0.62 0.21 273);
-  --primary-foreground: oklch(0.98 0.01 240);
-  --secondary: oklch(0.22 0.02 240);
-  --secondary-foreground: oklch(0.98 0.01 240);
-  --muted: oklch(0.22 0.02 240);
-  --muted-foreground: oklch(0.65 0.02 240);
-  --accent: oklch(0.22 0.02 240);
-  --accent-foreground: oklch(0.98 0.01 240);
-  --destructive: oklch(0.4 0.2 0);
-  --destructive-foreground: oklch(0.98 0.01 240);
-  --border: oklch(0.22 0.02 240);
-  --input: oklch(0.22 0.02 240);
-  --ring: oklch(0.62 0.21 273);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --font-sans: var(--font-sans);
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-}`;
-
-// Quantum Rose Preset
-const QUANTUM_ROSE_CSS = `@import "tailwindcss";
-
-@custom-variant dark (&:is(.dark *));
-
-:root {
-  --background: oklch(0.99 0.002 340);
-  --foreground: oklch(0.12 0.02 340);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.12 0.02 340);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.12 0.02 340);
-  --primary: oklch(0.6 0.22 340);
-  --primary-foreground: oklch(0.98 0.005 340);
-  --secondary: oklch(0.96 0.005 340);
-  --secondary-foreground: oklch(0.15 0.02 340);
-  --muted: oklch(0.96 0.005 340);
-  --muted-foreground: oklch(0.5 0.01 340);
-  --accent: oklch(0.96 0.005 340);
-  --accent-foreground: oklch(0.15 0.02 340);
-  --destructive: oklch(0.6 0.25 0);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.92 0.01 340);
-  --input: oklch(0.92 0.01 340);
-  --ring: oklch(0.6 0.22 340);
-  --font-sans: 'Outfit', sans-serif;
-  --radius: 1rem;
-}
-
-.dark {
-  --background: oklch(0.14 0.01 340);
-  --foreground: oklch(0.98 0.005 340);
-  --card: oklch(0.14 0.01 340);
-  --card-foreground: oklch(0.98 0.005 340);
-  --popover: oklch(0.14 0.01 340);
-  --popover-foreground: oklch(0.98 0.005 340);
-  --primary: oklch(0.65 0.2 340);
-  --primary-foreground: oklch(0.14 0.01 340);
-  --secondary: oklch(0.2 0.02 340);
-  --secondary-foreground: oklch(0.98 0.005 340);
-  --muted: oklch(0.2 0.02 340);
-  --muted-foreground: oklch(0.65 0.01 340);
-  --accent: oklch(0.2 0.02 340);
-  --accent-foreground: oklch(0.98 0.005 340);
-  --destructive: oklch(0.4 0.2 0);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.2 0.02 340);
-  --input: oklch(0.2 0.02 340);
-  --ring: oklch(0.65 0.2 340);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --font-sans: var(--font-sans);
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-}`;
-
-// Emerald Forest Preset
-const EMERALD_FOREST_CSS = `@import "tailwindcss";
-
-@custom-variant dark (&:is(.dark *));
-
-:root {
-  --background: oklch(0.99 0.002 140);
-  --foreground: oklch(0.12 0.02 140);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.12 0.02 140);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.12 0.02 140);
-  --primary: oklch(0.48 0.15 142);
-  --primary-foreground: oklch(0.98 0.005 140);
-  --secondary: oklch(0.95 0.005 140);
-  --secondary-foreground: oklch(0.15 0.02 140);
-  --muted: oklch(0.95 0.005 140);
-  --muted-foreground: oklch(0.5 0.01 140);
-  --accent: oklch(0.95 0.005 140);
-  --accent-foreground: oklch(0.15 0.02 140);
-  --destructive: oklch(0.6 0.25 0);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.91 0.01 140);
-  --input: oklch(0.91 0.01 140);
-  --ring: oklch(0.48 0.15 142);
-  --font-sans: 'Outfit', sans-serif;
-  --radius: 0.6rem;
-}
-
-.dark {
-  --background: oklch(0.13 0.01 140);
-  --foreground: oklch(0.97 0.005 140);
-  --card: oklch(0.13 0.01 140);
-  --card-foreground: oklch(0.97 0.005 140);
-  --popover: oklch(0.13 0.01 140);
-  --popover-foreground: oklch(0.97 0.005 140);
-  --primary: oklch(0.55 0.13 142);
-  --primary-foreground: oklch(0.13 0.01 140);
-  --secondary: oklch(0.18 0.01 140);
-  --secondary-foreground: oklch(0.97 0.005 140);
-  --muted: oklch(0.18 0.01 140);
-  --muted-foreground: oklch(0.6 0.01 140);
-  --accent: oklch(0.18 0.01 140);
-  --accent-foreground: oklch(0.97 0.005 140);
-  --destructive: oklch(0.4 0.2 0);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.18 0.01 140);
-  --input: oklch(0.18 0.01 140);
-  --ring: oklch(0.55 0.13 142);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --font-sans: var(--font-sans);
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-}`;
-
-// Presets list
-const PRESETS = [
-  { name: 'Solar Dusk (Sunset)', css: SOLAR_DUSK_CSS },
-  { name: 'Default Violet', css: DEFAULT_VIOLET_CSS },
-  { name: 'Quantum Rose', css: QUANTUM_ROSE_CSS },
-  { name: 'Emerald Forest', css: EMERALD_FOREST_CSS }
-];
 
 interface AuditIssue {
   id: string
@@ -405,30 +113,24 @@ function getDisabilityStyle(disability: string) {
 }
 
 function App() {
-  const [darkMode, setDarkMode] = useState<boolean>(false)
+  const [darkMode, setDarkMode] = useState<boolean>(() => localStorage.getItem('theme-dark') === 'true')
   const [activeTab, setActiveTab] = useState<'all' | 'critical' | 'serious' | 'moderate' | 'minor'>('all')
   const [scanUrl, setScanUrl] = useState<string>('https://www.info.unlp.edu.ar/')
   const [isScanning, setIsScanning] = useState<boolean>(false)
   const [score, setScore] = useState<number>(100)
-  const [summaryData, setSummaryData] = useState<any>(null)
+  const [summaryData, setSummaryData] = useState<AuditSummary | null>(null)
   const [hasScanned, setHasScanned] = useState<boolean>(false)
   const [currentStep, setCurrentStep] = useState<number>(0)
   const [expandedRules, setExpandedRules] = useState<Record<string, boolean>>({})
+  const [useAgent, setUseAgent] = useState<'fast' | 'recursive'>('fast')
 
   const toggleRuleExpanded = (ruleId: string) => {
     setExpandedRules(prev => ({ ...prev, [ruleId]: !prev[ruleId] }))
   }
 
-  // Custom theme playground state
-  const [customCss, setCustomCss] = useState<string>(themeCssText)
-  const [isPreviewActive, setIsPreviewActive] = useState<boolean>(false)
-  const [copied, setCopied] = useState<boolean>(false)
-  const [activePreset, setActivePreset] = useState<string>('Active theme.css (Disk)')
-
   // Read the active CSS file from theme.css dynamically on mount
   useEffect(() => {
     const isDark = localStorage.getItem('theme-dark') === 'true'
-    setDarkMode(isDark)
     if (isDark) {
       document.documentElement.classList.add('dark')
     } else {
@@ -493,18 +195,13 @@ function App() {
       observer.disconnect();
       clearTimeout(timer);
     };
-  }, [customCss, isPreviewActive]);
+  }, []);
 
   useEffect(() => {
-    let interval: any = null;
-    if (isScanning) {
-      setCurrentStep(0);
-      interval = setInterval(() => {
-        setCurrentStep(prev => (prev < 3 ? prev + 1 : prev));
-      }, 2500);
-    } else {
-      setCurrentStep(0);
-    }
+    if (!isScanning) return;
+    const interval = setInterval(() => {
+      setCurrentStep(prev => (prev < 3 ? prev + 1 : prev));
+    }, 2500);
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -525,38 +222,62 @@ function App() {
     e.preventDefault()
     if (!scanUrl.trim()) return
     setIsScanning(true)
+    setCurrentStep(0)
     const wasScanned = hasScanned
     setHasScanned(true)
 
     try {
-      const response = await fetch('/api/agents/accessibility-agent/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [`Please audit the following URL: ${scanUrl}`],
-          maxSteps: 30
-        })
-      });
+      let report: AuditReport | null = null
 
-      if (!response.ok) {
-        throw new Error(`Error de red: ${response.statusText}`);
+      if (useAgent === 'fast') {
+        // Bypass LLM completely for fast/deterministic crawl to avoid token outputs/timeout bottleneck
+        const response = await fetch('/api/tools/deterministicAudit/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            data: {
+              url: scanUrl,
+              maxPages: 3,
+              maxDepth: 2
+            }
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error de red llamando a la herramienta: ${response.statusText}`);
+        }
+
+        report = await response.json();
+      } else {
+        const response = await fetch('/api/agents/accessibility-agent/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [`Please audit the following URL: ${scanUrl}`],
+            maxSteps: 30
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error de red: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data || !data.text) {
+          throw new Error('No se recibió texto de respuesta del agente.');
+        }
+
+        const reportText = data.text;
+
+        // Intentar extraer el bloque JSON en caso de que el modelo haya incluido marcas Markdown (```json ... ```)
+        const jsonMatch = reportText.match(/\{[\s\S]*\}/);
+        const cleanJson = jsonMatch ? jsonMatch[0] : reportText;
+        report = JSON.parse(cleanJson);
       }
-
-      const data = await response.json();
-
-      if (!data || !data.text) {
-        throw new Error('No se recibió texto de respuesta del agente.');
-      }
-
-      const reportText = data.text;
-
-      // Intentar extraer el bloque JSON en caso de que el modelo haya incluido marcas Markdown (```json ... ```)
-      const jsonMatch = reportText.match(/\{[\s\S]*\}/);
-      const cleanJson = jsonMatch ? jsonMatch[0] : reportText;
-      const report = JSON.parse(cleanJson);
 
       if (report && Array.isArray(report.violations)) {
-        const mappedIssues: AuditIssue[] = report.violations.map((violation: any) => {
+        const mappedIssues: AuditIssue[] = report.violations.map((violation: AuditViolation) => {
           let category: 'contraste' | 'images' | 'structure' | 'keyboard' | 'other' = 'other';
           const ruleId = violation.ruleId.toLowerCase();
 
@@ -600,43 +321,16 @@ function App() {
       } else {
         throw new Error('El reporte de auditoría no tiene el formato esperado.');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error al realizar el escaneo:', error);
-      alert(`Hubo un error al ejecutar la auditoría de accesibilidad: ${error?.message || error}. Asegúrate de que el backend de Mastra esté corriendo.`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      alert(`Hubo un error al ejecutar la auditoría de accesibilidad: ${errorMessage}. Asegúrate de que el backend de Mastra esté corriendo.`);
       if (!wasScanned) {
         setHasScanned(false);
       }
     } finally {
       setIsScanning(false);
     }
-  }
-
-  const handlePresetSelect = (presetName: string, css: string) => {
-    setActivePreset(presetName)
-    setCustomCss(css)
-    setIsPreviewActive(true)
-  };
-
-  const handleResetToDisk = () => {
-    setActivePreset('Active theme.css (Disk)')
-    setCustomCss(themeCssText)
-    setIsPreviewActive(false)
-  }
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(customCss)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  const downloadThemeFile = () => {
-    const element = document.createElement("a");
-    const file = new Blob([customCss], { type: 'text/css' });
-    element.href = URL.createObjectURL(file);
-    element.download = "theme.css";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
   }
 
   const [issues, setIssues] = useState<AuditIssue[]>([])
@@ -676,9 +370,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300 pb-16">
-      {/* Dynamic Style Injection for live tweakcn previewing in the sandbox */}
-      {isPreviewActive && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
-
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-10 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -730,6 +421,17 @@ function App() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                <div className="flex items-center justify-center gap-4 mb-5">
+                  <span className={`text-sm font-medium ${useAgent === 'recursive' ? 'text-foreground' : 'text-muted-foreground'}`}>IA Recursiva</span>
+                  <button
+                    type="button"
+                    onClick={() => setUseAgent(useAgent === 'fast' ? 'recursive' : 'fast')}
+                    className="relative inline-flex h-6 w-11 items-center rounded-full bg-primary/80 hover:bg-primary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${useAgent === 'fast' ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </button>
+                  <span className={`text-sm font-medium ${useAgent === 'fast' ? 'text-primary font-bold' : 'text-muted-foreground'}`}>IA Rápida (Determinista)</span>
+                </div>
                 <form onSubmit={handleScan} className="flex flex-col sm:flex-row gap-3">
                   <div className="relative flex-grow">
                     <input
@@ -778,7 +480,18 @@ function App() {
                 </div>
               </div>
 
-              <form onSubmit={handleScan} className="flex-grow flex gap-3 max-w-3xl w-full">
+              <form onSubmit={handleScan} className="flex-grow flex flex-col md:flex-row gap-3 max-w-3xl w-full">
+                <div className="flex items-center justify-center gap-2 px-2 bg-muted/50 rounded-lg">
+                  <span className={`text-xs ${useAgent === 'recursive' ? 'text-foreground' : 'text-muted-foreground'}`}>Recur.</span>
+                  <button
+                    type="button"
+                    onClick={() => setUseAgent(useAgent === 'fast' ? 'recursive' : 'fast')}
+                    className="relative inline-flex h-5 w-9 items-center rounded-full bg-primary/80 transition-colors cursor-pointer"
+                  >
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${useAgent === 'fast' ? 'translate-x-5' : 'translate-x-1'}`} />
+                  </button>
+                  <span className={`text-xs ${useAgent === 'fast' ? 'text-primary font-bold' : 'text-muted-foreground'}`}>Fast</span>
+                </div>
                 <div className="relative flex-grow">
                   <input
                     type="url"
