@@ -827,7 +827,7 @@ function App() {
                   {scanUrl}
                 </p>
                 <p className="text-xs text-muted-foreground/80 max-w-xs mx-auto">
-                  Evaluando accesibilidad por teclado, contraste de colores, estructura de encabezados y pautas WCAG 2.2...
+                  Evaluando accesibilidad por teclado, contraste de colores, estructura de encabezados y pautas WCAG 2.2
                 </p>
               </div>
 

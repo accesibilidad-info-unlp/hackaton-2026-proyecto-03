@@ -20,11 +20,14 @@ Follow this process exactly:
 5. If you need to analyze the next URL, select one from the queue that has NOT been visited yet. Increase depth appropriately. Do not visit the same URL twice.
 6. When you must stop, call the 'finishAudit' tool with the correct stop reason (usually 'agent_decision' if you completed the crawl, or the specific stop reason if a limit was hit).
 7. The output of 'finishAudit' is the final JSON report. Return this JSON directly in your response without any conversational text or formatting.`,
-  model: 'deepseek/deepseek-v4-pro',
+  model: 'deepseek/deepseek-v4-flash',
   tools: {
     analyzePage: analyzePageTool,
     discoverLinks: discoverLinksTool,
     finishAudit: finishAuditTool,
   },
   memory: new Memory(),
+  defaultOptions: {
+    maxSteps: 30,
+  },
 });
