@@ -10,11 +10,17 @@ import {
   calculateAccessibilityScore,
   mapViolationsToIssues
 } from '@/services/home/auditService';
-import type { AuditSummary, AuditIssue } from '@/services/home/types';
+import type { AuditSummary, AuditIssue, AuditOptions } from '@/services/home/types';
 
 export default function Home() {
   const [darkMode, setDarkMode] = useState<boolean>(() => localStorage.getItem('theme-dark') === 'true');
+  const [scanMode, setScanMode] = useState<'crawl' | 'list'>('crawl');
   const [scanUrl, setScanUrl] = useState<string>('https://www.info.unlp.edu.ar/');
+  const [urlList, setUrlList] = useState<string[]>(['https://www.info.unlp.edu.ar/']);
+  const [maxPages, setMaxPages] = useState<number>(3);
+  const [maxDepth, setMaxDepth] = useState<number>(2);
+  const [maxDurationMinutes, setMaxDurationMinutes] = useState<number>(5);
+  const [displayScanUrl, setDisplayScanUrl] = useState<string>('https://www.info.unlp.edu.ar/');
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [score, setScore] = useState<number>(100);
   const [summaryData, setSummaryData] = useState<AuditSummary | null>(null);
@@ -115,14 +121,41 @@ export default function Home() {
 
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!scanUrl.trim()) return;
+    
+    let options: AuditOptions;
+    let displayString: string;
+
+    if (scanMode === 'crawl') {
+      if (!scanUrl.trim()) return;
+      options = {
+        url: scanUrl.trim(),
+        maxPages: Number(maxPages),
+        maxDepth: Number(maxDepth),
+        maxDurationMs: Number(maxDurationMinutes) * 60 * 1000,
+      };
+      displayString = scanUrl.trim();
+    } else {
+      const activeUrls = urlList.filter(u => u.trim() !== '');
+      if (activeUrls.length === 0) {
+        alert('Por favor ingrese al menos una URL válida.');
+        return;
+      }
+      options = {
+        urls: activeUrls.map(u => u.trim()),
+      };
+      displayString = activeUrls.length === 1
+        ? activeUrls[0]
+        : `${activeUrls.length} URLs específicas (${activeUrls[0]}...)`;
+    }
+
     setIsScanning(true);
     setCurrentStep(0);
     const wasScanned = hasScanned;
     setHasScanned(true);
+    setDisplayScanUrl(displayString);
 
     try {
-      const report = await runAccessibilityAudit(scanUrl);
+      const report = await runAccessibilityAudit(options);
 
       if (report && Array.isArray(report.violations)) {
         const mappedIssues = mapViolationsToIssues(report.violations);
@@ -154,8 +187,18 @@ export default function Home() {
       {!hasScanned ? (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 flex flex-col items-center justify-center min-h-[50vh]">
           <AuditForm
+            scanMode={scanMode}
+            onScanModeChange={setScanMode}
             scanUrl={scanUrl}
             onUrlChange={setScanUrl}
+            urlList={urlList}
+            onUrlListChange={setUrlList}
+            maxPages={maxPages}
+            onMaxPagesChange={setMaxPages}
+            maxDepth={maxDepth}
+            onMaxDepthChange={setMaxDepth}
+            maxDurationMinutes={maxDurationMinutes}
+            onMaxDurationMinutesChange={setMaxDurationMinutes}
             isScanning={isScanning}
             onSubmit={handleScan}
             variant="hero"
@@ -166,15 +209,25 @@ export default function Home() {
           
           {/* Top Bar: Compact Audit Form */}
           <AuditForm
+            scanMode={scanMode}
+            onScanModeChange={setScanMode}
             scanUrl={scanUrl}
             onUrlChange={setScanUrl}
+            urlList={urlList}
+            onUrlListChange={setUrlList}
+            maxPages={maxPages}
+            onMaxPagesChange={setMaxPages}
+            maxDepth={maxDepth}
+            onMaxDepthChange={setMaxDepth}
+            maxDurationMinutes={maxDurationMinutes}
+            onMaxDurationMinutesChange={setMaxDurationMinutes}
             isScanning={isScanning}
             onSubmit={handleScan}
             variant="compact"
           />
 
           {isScanning ? (
-            <AuditProgress scanUrl={scanUrl} currentStep={currentStep} />
+            <AuditProgress scanUrl={displayScanUrl} currentStep={currentStep} />
           ) : (
             <>
               {/* Row 2: Score Gauge and Audit Summary */}
@@ -183,7 +236,7 @@ export default function Home() {
                 <AuditSummaryCard
                   summaryData={summaryData}
                   issues={issues}
-                  scanUrl={scanUrl}
+                  scanUrl={displayScanUrl}
                 />
               </div>
 

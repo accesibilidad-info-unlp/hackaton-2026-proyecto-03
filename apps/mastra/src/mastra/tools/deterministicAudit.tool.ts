@@ -17,13 +17,27 @@ export const deterministicAuditTool = createTool({
   id: 'deterministicAudit',
   description: 'Performs a deterministic, fast local BFS crawl and accessibility audit up to maxPages limits without using LLM recursion.',
   inputSchema: z.object({
-    url: z.string().url().describe('Initial URL to start crawling and auditing.'),
+    url: z.string().url().optional().describe('Initial URL to start crawling and auditing.'),
+    urls: z.array(z.string().url()).optional().describe('List of specific URLs to audit directly without crawling.'),
     maxPages: z.number().optional().default(3).describe('Maximum number of pages to visit in this audit session.'),
-    maxDepth: z.number().optional().default(2).describe('Maximum depth for the BFS crawl.')
+    maxDepth: z.number().optional().default(2).describe('Maximum depth for the BFS crawl.'),
+    maxDurationMs: z.number().optional().default(300000).describe('Maximum duration in milliseconds for the crawl.')
   }),
   outputSchema: z.any(),
-  execute: async ({ url, maxPages = 3, maxDepth = 2 }) => {
-    const queue = [{ url, depth: 0 }];
+  execute: async ({ url, urls, maxPages = 3, maxDepth = 2, maxDurationMs = 300000 }) => {
+    const isCrawlMode = !urls || urls.length === 0;
+
+    if (isCrawlMode && !url) {
+      throw new Error('A starting URL is required for crawling mode.');
+    }
+    if (!isCrawlMode && urls.length === 0) {
+      throw new Error('At least one URL is required for specific URL list mode.');
+    }
+
+    const queue = isCrawlMode
+      ? [{ url: url!, depth: 0 }]
+      : urls!.map((u: string) => ({ url: u, depth: 0 }));
+
     const visited: string[] = [];
     const findings: Finding[] = [];
     const startTime = Date.now();
@@ -38,7 +52,12 @@ export const deterministicAuditTool = createTool({
       const axePath = require.resolve('axe-core/axe.min.js');
       const axeSource = fs.readFileSync(axePath, 'utf8');
 
-      while (queue.length > 0 && visited.length < maxPages) {
+      while (queue.length > 0 && (isCrawlMode ? visited.length < maxPages : true)) {
+        if (isCrawlMode && (Date.now() - startTime >= maxDurationMs)) {
+          stoppedReason = 'max_duration';
+          break;
+        }
+
         const currentItem = queue.shift();
         if (!currentItem) break;
 
@@ -96,14 +115,14 @@ export const deterministicAuditTool = createTool({
             }
           }
 
-          // Discover links if depth allows
-          if (currentItem.depth < maxDepth) {
+          // Discover links if depth allows and crawl mode is active
+          if (isCrawlMode && currentItem.depth < maxDepth) {
             const hrefs = await page.evaluate(() => {
               const anchors = Array.from(document.querySelectorAll('a'));
               return anchors.map(a => a.href).filter(Boolean);
             });
 
-            const currentOrigin = new URL(url).origin;
+            const currentOrigin = new URL(url!).origin;
             for (const href of hrefs) {
               try {
                 const parsed = new URL(href, currentUrl);
@@ -115,7 +134,7 @@ export const deterministicAuditTool = createTool({
                 if (hasIgnoredExtension) continue;
 
                 const isVisited = visited.includes(cleanedUrl);
-                const isQueued = queue.some(item => item.url === cleanedUrl);
+                const isQueued = queue.some((item: { url: string; depth: number }) => item.url === cleanedUrl);
 
                 if (!isVisited && !isQueued) {
                   queue.push({ url: cleanedUrl, depth: currentItem.depth + 1 });
@@ -130,7 +149,7 @@ export const deterministicAuditTool = createTool({
         }
       }
 
-      if (visited.length >= maxPages && queue.length > 0) {
+      if (isCrawlMode && visited.length >= maxPages && queue.length > 0) {
         stoppedReason = 'max_pages';
       }
 

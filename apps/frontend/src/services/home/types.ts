@@ -55,3 +55,11 @@ export interface GroupedIssue {
   recommendation: string;
   instances: AuditIssue[];
 }
+
+export interface AuditOptions {
+  url?: string;
+  urls?: string[];
+  maxPages?: number;
+  maxDepth?: number;
+  maxDurationMs?: number;
+}

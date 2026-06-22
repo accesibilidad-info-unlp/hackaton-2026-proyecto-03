@@ -1,19 +1,15 @@
-import type { AuditViolation, AuditSummary, AuditReport, AuditIssue } from './types';
+import type { AuditViolation, AuditSummary, AuditReport, AuditIssue, AuditOptions } from './types';
 
 /**
  * Runs an accessibility audit via the Mastra API.
  * Supports 'fast' (deterministic) and 'recursive' (agent-based) crawls.
  */
-export async function runAccessibilityAudit(scanUrl: string): Promise<AuditReport> {
+export async function runAccessibilityAudit(options: AuditOptions): Promise<AuditReport> {
   const response = await fetch('/api/tools/deterministicAudit/execute', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      data: {
-        url: scanUrl,
-        maxPages: 3,
-        maxDepth: 2
-      }
+      data: options
     })
   });
 
