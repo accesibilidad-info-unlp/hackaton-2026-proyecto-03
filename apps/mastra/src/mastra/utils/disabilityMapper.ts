@@ -183,6 +183,26 @@ export function translateRule(ruleId: string, originalDescription: string): Rule
     'marquee': {
       name: "Elemento marquee obsoleto utilizado",
       description: "La etiqueta `<marquee>` crea movimiento automático del texto que no puede detenerse, afectando a personas con problemas de atención y lectura."
+    },
+    'landmark-one-main': {
+      name: "Punto de referencia principal faltante",
+      description: "El documento debe tener una región principal (<main> o role=\"main\") para que los usuarios puedan saltar directamente al contenido principal."
+    },
+    'page-has-heading-one': {
+      name: "Página sin título principal (H1)",
+      description: "La página debe tener al menos un encabezado de nivel uno (<h1>) que identifique el contenido principal."
+    },
+    'aria-hidden-focusable': {
+      name: "Elemento enfocable dentro de área oculta",
+      description: "No se deben incluir elementos interactivos (como enlaces o botones) dentro de contenedores que tengan aria-hidden=\"true\", ya que esto confunde a los usuarios con lectores de pantalla."
+    },
+    'nested-interactive': {
+      name: "Controles interactivos anidados",
+      description: "Los elementos interactivos no deben anidarse dentro de otros elementos interactivos, ya que esto dificulta el foco del teclado y confunde las acciones de activación."
+    },
+    'frame-title': {
+      name: "Iframe sin título descriptivo",
+      description: "Los elementos <iframe> deben tener un atributo title que describa su contenido para que las tecnologías asistenciales lo anuncien."
     }
   };
 
