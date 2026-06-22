@@ -1,4 +1,4 @@
-import { Activity, FileText, Globe, RefreshCw, Eye, Keyboard, Brain, Volume2 } from 'lucide-react';
+import { Activity, Globe, RefreshCw, Eye, Keyboard, Brain, Volume2, ExternalLink } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import type { AuditSummary, AuditIssue } from '@/services/home/types';
 
@@ -66,7 +66,20 @@ export function AuditSummaryCard({ summaryData, issues, scanUrl }: AuditSummaryC
           Resumen de Auditoría
         </h3>
         <p className="text-xs text-muted-foreground mt-0.5 break-all">
-          Analizado para: <span className="font-mono text-foreground">{scanUrl}</span>
+          Analizado para:{' '}
+          {scanUrl.startsWith('http://') || scanUrl.startsWith('https://') ? (
+            <a
+              href={scanUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-primary hover:underline inline-flex items-center gap-1 font-semibold"
+            >
+              {scanUrl}
+              <ExternalLink className="w-3 h-3 shrink-0" />
+            </a>
+          ) : (
+            <span className="font-mono text-foreground">{scanUrl}</span>
+          )}
         </p>
       </div>
 
@@ -218,10 +231,6 @@ export function AuditSummaryCard({ summaryData, issues, scanUrl }: AuditSummaryC
       </div>
 
       <div className="text-xs text-muted-foreground flex flex-col gap-2 mt-auto">
-        <div className="flex items-center gap-1.5">
-          <FileText className="w-4 h-4 text-primary shrink-0" />
-          <span>Normas aplicadas: <strong>WCAG 2.2</strong></span>
-        </div>
         {summaryData && (
           <div className="flex items-center gap-4 mt-1 border-t border-border/50 pt-2.5 font-medium">
             <span className="flex items-center gap-1.5">
