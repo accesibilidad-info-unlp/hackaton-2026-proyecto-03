@@ -86,7 +86,7 @@ export function AuditForm({
         }`}
       >
         <Globe className="w-3.5 h-3.5" />
-        Rastreo de Dominio
+        Analizar Dominio
       </button>
       <button
         type="button"
@@ -252,27 +252,51 @@ export function AuditForm({
           </div>
 
           <form onSubmit={onSubmit} className="flex flex-col gap-3 w-full">
-            <div className="flex flex-col md:flex-row gap-3 items-start md:items-center w-full">
-              {scanMode === 'crawl' ? renderCrawlInput() : renderListInputs()}
-              
-              <button
-                type="submit"
-                disabled={isScanning || isFormInvalid}
-                className="bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-primary/10 shrink-0 w-full md:w-auto self-stretch md:self-auto"
-              >
-                {isScanning ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin text-primary-foreground" />
-                    Analizando...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 text-primary-foreground" />
-                    Escanear
-                  </>
-                )}
-              </button>
-            </div>
+            {scanMode === 'crawl' ? (
+              <div className="flex flex-col gap-3 w-full">
+                {renderCrawlInput()}
+                
+                <button
+                  type="submit"
+                  disabled={isScanning || isFormInvalid}
+                  className="w-full bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-primary/10"
+                >
+                  {isScanning ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin text-primary-foreground" />
+                      Analizando...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 text-primary-foreground" />
+                      Escanear
+                    </>
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 w-full">
+                {renderListInputs()}
+                
+                <button
+                  type="submit"
+                  disabled={isScanning || isFormInvalid}
+                  className="w-full bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-primary/10 mt-2"
+                >
+                  {isScanning ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin text-primary-foreground" />
+                      Analizando URLs...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 text-primary-foreground" />
+                      Comenzar Auditoría de URLs
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
             {renderAdvancedSettings()}
           </form>
         </CardContent>
@@ -315,12 +339,12 @@ export function AuditForm({
           <form onSubmit={onSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-4">
               {scanMode === 'crawl' ? (
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col gap-4">
                   {renderCrawlInput()}
                   <button
                     type="submit"
                     disabled={isScanning || isFormInvalid}
-                    className="bg-primary text-primary-foreground hover:opacity-95 disabled:opacity-50 px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-primary/20 shrink-0"
+                    className="w-full bg-primary text-primary-foreground hover:opacity-95 disabled:opacity-50 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-primary/20"
                   >
                     {isScanning ? (
                       <>
