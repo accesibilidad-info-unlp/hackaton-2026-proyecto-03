@@ -6,9 +6,6 @@ import { MastraCompositeStore } from '@mastra/core/storage';
 import { Observability, MastraStorageExporter, MastraPlatformExporter, SensitiveDataFilter } from '@mastra/observability';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { accessibilityAgent } from './agents/accessibility.agent';
-
-
 import { fastAccessibilityAgent } from './agents/fastAccessibility.agent';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,7 +15,7 @@ const duckdbPath = path.resolve(__dirname, '../../mastra.duckdb');
 
 export const mastra = new Mastra({
   workflows: {},
-  agents: { accessibilityAgent, fastAccessibilityAgent },
+  agents: { fastAccessibilityAgent },
   scorers: {},
   storage: new MastraCompositeStore({
     id: 'composite-storage',

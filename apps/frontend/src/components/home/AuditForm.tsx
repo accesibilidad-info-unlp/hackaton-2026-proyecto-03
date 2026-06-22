@@ -6,8 +6,6 @@ interface AuditFormProps {
   scanUrl: string;
   onUrlChange: (url: string) => void;
   isScanning: boolean;
-  useAgent: 'fast' | 'recursive';
-  onUseAgentChange: (agent: 'fast' | 'recursive') => void;
   onSubmit: (e: React.FormEvent) => void;
   variant?: 'hero' | 'compact';
 }
@@ -16,15 +14,9 @@ export function AuditForm({
   scanUrl,
   onUrlChange,
   isScanning,
-  useAgent,
-  onUseAgentChange,
   onSubmit,
   variant = 'hero'
 }: AuditFormProps) {
-  
-  const toggleAgent = () => {
-    onUseAgentChange(useAgent === 'fast' ? 'recursive' : 'fast');
-  };
 
   if (variant === 'compact') {
     return (
@@ -39,17 +31,6 @@ export function AuditForm({
           </div>
 
           <form onSubmit={onSubmit} className="flex-grow flex flex-col md:flex-row gap-3 max-w-3xl w-full">
-            <div className="flex items-center justify-center gap-2 px-2 bg-muted/50 rounded-lg">
-              <span className={`text-xs ${useAgent === 'recursive' ? 'text-foreground' : 'text-muted-foreground'}`}>Recur.</span>
-              <button
-                type="button"
-                onClick={toggleAgent}
-                className="relative inline-flex h-5 w-9 items-center rounded-full bg-primary/80 transition-colors cursor-pointer"
-              >
-                <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${useAgent === 'fast' ? 'translate-x-5' : 'translate-x-1'}`} />
-              </button>
-              <span className={`text-xs ${useAgent === 'fast' ? 'text-primary font-bold' : 'text-muted-foreground'}`}>Fast</span>
-            </div>
             <div className="relative flex-grow">
               <input
                 type="url"
@@ -110,17 +91,6 @@ export function AuditForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center gap-4 mb-5">
-            <span className={`text-sm font-medium ${useAgent === 'recursive' ? 'text-foreground' : 'text-muted-foreground'}`}>IA Recursiva</span>
-            <button
-              type="button"
-              onClick={toggleAgent}
-              className="relative inline-flex h-6 w-11 items-center rounded-full bg-primary/80 hover:bg-primary transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            >
-              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${useAgent === 'fast' ? 'translate-x-6' : 'translate-x-1'}`} />
-            </button>
-            <span className={`text-sm font-medium ${useAgent === 'fast' ? 'text-primary font-bold' : 'text-muted-foreground'}`}>IA Rápida (Determinista)</span>
-          </div>
           <form onSubmit={onSubmit} className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-grow">
               <input

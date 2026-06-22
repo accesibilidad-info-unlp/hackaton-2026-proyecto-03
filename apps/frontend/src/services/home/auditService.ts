@@ -4,52 +4,24 @@ import type { AuditViolation, AuditSummary, AuditReport, AuditIssue } from './ty
  * Runs an accessibility audit via the Mastra API.
  * Supports 'fast' (deterministic) and 'recursive' (agent-based) crawls.
  */
-export async function runAccessibilityAudit(scanUrl: string, useAgent: 'fast' | 'recursive'): Promise<AuditReport> {
-  if (useAgent === 'fast') {
-    const response = await fetch('/api/tools/deterministicAudit/execute', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        data: {
-          url: scanUrl,
-          maxPages: 3,
-          maxDepth: 2
-        }
-      })
-    });
+export async function runAccessibilityAudit(scanUrl: string): Promise<AuditReport> {
+  const response = await fetch('/api/tools/deterministicAudit/execute', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      data: {
+        url: scanUrl,
+        maxPages: 3,
+        maxDepth: 2
+      }
+    })
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error de red llamando a la herramienta: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } else {
-    const response = await fetch('/api/agents/accessibility-agent/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: [`Please audit the following URL: ${scanUrl}`],
-        maxSteps: 30
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error de red: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    if (!data || !data.text) {
-      throw new Error('No se recibió texto de respuesta del agente.');
-    }
-
-    const reportText = data.text;
-
-    // Intentar extraer el bloque JSON en caso de que el modelo haya incluido marcas Markdown (```json ... ```)
-    const jsonMatch = reportText.match(/\{[\s\S]*\}/);
-    const cleanJson = jsonMatch ? jsonMatch[0] : reportText;
-    return JSON.parse(cleanJson);
+  if (!response.ok) {
+    throw new Error(`Error de red llamando a la herramienta: ${response.statusText}`);
   }
+
+  return await response.json();
 }
 
 /**

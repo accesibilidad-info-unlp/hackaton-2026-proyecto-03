@@ -20,7 +20,6 @@ export default function Home() {
   const [summaryData, setSummaryData] = useState<AuditSummary | null>(null);
   const [hasScanned, setHasScanned] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [useAgent, setUseAgent] = useState<'fast' | 'recursive'>('fast');
   const [issues, setIssues] = useState<AuditIssue[]>([]);
 
   // Apply active theme (dark/light) on mount
@@ -123,7 +122,7 @@ export default function Home() {
     setHasScanned(true);
 
     try {
-      const report = await runAccessibilityAudit(scanUrl, useAgent);
+      const report = await runAccessibilityAudit(scanUrl);
 
       if (report && Array.isArray(report.violations)) {
         const mappedIssues = mapViolationsToIssues(report.violations);
@@ -158,8 +157,6 @@ export default function Home() {
             scanUrl={scanUrl}
             onUrlChange={setScanUrl}
             isScanning={isScanning}
-            useAgent={useAgent}
-            onUseAgentChange={setUseAgent}
             onSubmit={handleScan}
             variant="hero"
           />
@@ -172,8 +169,6 @@ export default function Home() {
             scanUrl={scanUrl}
             onUrlChange={setScanUrl}
             isScanning={isScanning}
-            useAgent={useAgent}
-            onUseAgentChange={setUseAgent}
             onSubmit={handleScan}
             variant="compact"
           />
