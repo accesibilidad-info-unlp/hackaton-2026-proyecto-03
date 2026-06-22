@@ -1,7 +1,8 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ShieldAlert, AlertTriangle, Info, ChevronRight, Copy } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, Info, ChevronRight, Copy, ExternalLink } from 'lucide-react';
 import type { GroupedIssue } from '@/services/home/types';
 import { DisabilityBadge } from '@/components/home/DisabilityBadge';
+
 
 interface FindingCardProps {
   group: GroupedIssue;
@@ -20,33 +21,35 @@ export function FindingCard({ group, isExpanded, onToggleExpand }: FindingCardPr
       <CardHeader className="pb-3">
         <div className="flex flex-col gap-2">
           {/* Badges row */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {group.impact === 'critical' && (
-              <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-2 py-0.5 rounded-md border border-destructive/20 flex items-center gap-1">
-                <ShieldAlert className="w-3 h-3" /> Crítico
-              </span>
-            )}
-            {group.impact === 'serious' && (
-              <span className="bg-orange-500/10 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-500/20 flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" /> Serio
-              </span>
-            )}
-            {group.impact === 'moderate' && (
-              <span className="bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-yellow-500/20 flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" /> Moderado
-              </span>
-            )}
-            {group.impact === 'minor' && (
-              <span className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border flex items-center gap-1">
-                <Info className="w-3 h-3" /> Menor
-              </span>
-            )}
-            <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mr-1">
+          <div className="flex items-center justify-between gap-2 flex-wrap w-full">
+            <div className="flex items-center gap-2 flex-wrap">
+              {group.impact === 'critical' && (
+                <span className="bg-destructive/10 text-destructive text-[10px] font-bold px-2 py-0.5 rounded-md border border-destructive/20 flex items-center gap-1">
+                  <ShieldAlert className="w-3 h-3" /> Crítico
+                </span>
+              )}
+              {group.impact === 'serious' && (
+                <span className="bg-orange-500/10 text-orange-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-orange-500/20 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" /> Serio
+                </span>
+              )}
+              {group.impact === 'moderate' && (
+                <span className="bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-md border border-yellow-500/20 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" /> Moderado
+                </span>
+              )}
+              {group.impact === 'minor' && (
+                <span className="bg-secondary text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border flex items-center gap-1">
+                  <Info className="w-3 h-3" /> Menor
+                </span>
+              )}
+              {group.disabilities && group.disabilities.map((disability, idx) => (
+                <DisabilityBadge key={idx} disability={disability} />
+              ))}
+            </div>
+            <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
               Categoría: {group.category}
             </span>
-            {group.disabilities && group.disabilities.map((disability, idx) => (
-              <DisabilityBadge key={idx} disability={disability} />
-            ))}
           </div>
           {/* Title in Spanish with ruleId in badge */}
           <div className="flex items-baseline justify-between flex-wrap gap-2 mt-1">
@@ -73,7 +76,39 @@ export function FindingCard({ group, isExpanded, onToggleExpand }: FindingCardPr
             Recomendación de corrección general:
           </h4>
           <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-            {group.recommendation}
+            {(() => {
+              const recommendation = group.recommendation;
+              const triggerText = "Consulte más detalles en:";
+              const index = recommendation.indexOf(triggerText);
+              if (index !== -1) {
+                const before = recommendation.substring(0, index);
+                const rest = recommendation.substring(index + triggerText.length);
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const match = rest.match(urlRegex);
+                if (match) {
+                  const url = match[0];
+                  const restParts = rest.split(url);
+                  return (
+                    <>
+                      {before}
+                      {triggerText}
+                      {restParts[0]}
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline font-semibold inline-flex items-center gap-1 ml-1 select-all"
+                      >
+                        {url}
+                        <ExternalLink className="w-3 h-3 shrink-0" />
+                      </a>
+                      {restParts[1]}
+                    </>
+                  );
+                }
+              }
+              return recommendation;
+            })()}
           </p>
         </div>
 

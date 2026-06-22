@@ -6,6 +6,7 @@ export interface AuditViolation {
   helpUrl?: string
   html?: string
   disabilities?: string[]
+  tags?: string[]
   translatedName?: string
   translatedDescription?: string
   url?: string
@@ -39,6 +40,7 @@ export interface AuditIssue {
   recommendation: string
   codeSnippet?: string
   disabilities?: string[]
+  tags?: string[]
   translatedName?: string
   translatedDescription?: string
   url?: string

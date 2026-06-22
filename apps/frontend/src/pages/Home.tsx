@@ -232,7 +232,7 @@ export default function Home() {
             <>
               {/* Row 2: Score Gauge and Audit Summary */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <ScoreGauge score={score} />
+                <ScoreGauge score={score} issues={issues} />
                 <AuditSummaryCard
                   summaryData={summaryData}
                   issues={issues}

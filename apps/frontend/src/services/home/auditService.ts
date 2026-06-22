@@ -58,6 +58,7 @@ export function mapViolationsToIssues(violations: AuditViolation[]): AuditIssue[
       recommendation: `Consulte más detalles en: ${violation.helpUrl}`,
       codeSnippet: violation.html,
       disabilities: violation.disabilities || [],
+      tags: violation.tags || [],
       translatedName: violation.translatedName,
       translatedDescription: violation.translatedDescription,
       url: violation.url,
