@@ -315,7 +315,7 @@ export function AuditForm({
           Auditoría de Accesibilidad IA
         </h2>
         <p className="text-muted-foreground text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-          Ingrese la dirección de su sitio web para analizar el nivel de cumplimiento de las pautas WCAG 2.2 de accesibilidad en tiempo real.
+          Ingrese la dirección de su sitio web para analizar el nivel de cumplimiento de las pautas WCAG 2.2 de accesibilidad en tiempo real
         </p>
       </div>
 
@@ -324,15 +324,7 @@ export function AuditForm({
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-base font-bold">
-            <Globe className="w-5 h-5 text-primary" />
-            Configurar Auditoría
-          </CardTitle>
-          <CardDescription>
-            Seleccione el modo de análisis y las opciones de accesibilidad a evaluar.
-          </CardDescription>
-        </CardHeader>
+      
         <CardContent>
           {renderTabSwitcher()}
 
