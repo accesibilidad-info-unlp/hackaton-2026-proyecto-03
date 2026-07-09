@@ -161,17 +161,7 @@ export default function Home({ onOpenRanking }: HomeProps) {
     setDisplayScanUrl(displayString);
 
     try {
-      const report = await runAccessibilityAudit(options);
-
-      const historyItem = {
-        fecha: new Date().toISOString(),
-        url: displayString,
-        summary: report.summary,
-        byRule: report.byRule,
-        byPage: report.byPage,
-      };
-
-      await saveHistory(historyItem);
+      const report = await runAccessibilityAudit(options);      
 
       if (report && Array.isArray(report.violations)) {
         const mappedIssues = mapViolationsToIssues(report.violations);
@@ -179,6 +169,33 @@ export default function Home({ onOpenRanking }: HomeProps) {
         setSummaryData({ ...report.summary, durationMs: report.durationMs });
 
         const calculatedScore = calculateAccessibilityScore(report.summary);
+        const historyItem = {
+          fecha: new Date().toISOString(),
+          url: displayString,
+          summary: report.summary,
+          byRule: report.byRule,
+          byPage: report.byPage,
+
+          aiReport: {
+            score: calculatedScore,
+            totalIssues: mappedIssues.length,
+            timestamp: new Date().toISOString(),
+
+            issues: mappedIssues.map(issue => ({
+              id: issue.id,
+              ruleId: issue.title,
+              impact: issue.impact,
+              category: issue.category,
+              description: issue.translatedDescription || issue.description,
+              recommendation: issue.recommendation,
+              selector: issue.selector,
+              codeSnippet: issue.codeSnippet,
+              url: issue.url,
+            })),
+          },
+        };
+
+        await saveHistory(historyItem);
         setScore(calculatedScore);
         setHasScanned(true);
       } else {
