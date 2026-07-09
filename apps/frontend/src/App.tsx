@@ -1,7 +1,17 @@
-import Home from './pages/Home';
+import { useState } from "react";
+import Home from "./pages/Home";
+import Ranking from "./pages/Ranking";
 
-function App() {
-  return <Home />;
+export default function App() {
+  const [page, setPage] = useState<"home" | "ranking">("home");
+
+  return (
+    <>
+      {page === "home" ? (
+        <Home onOpenRanking={() => setPage("ranking")} />
+      ) : (
+       <Ranking onBack={() => setPage("home")} />
+      )}
+    </>
+  );
 }
-
-export default App;

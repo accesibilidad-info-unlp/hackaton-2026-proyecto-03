@@ -2,7 +2,7 @@ import { ShieldAlert, Sun, Moon } from 'lucide-react';
 
 interface HeaderProps {
   darkMode: boolean;
-  onToggleDarkMode: () => void;
+  onToggleDarkMode: () => void;  
 }
 
 export function Header({ darkMode, onToggleDarkMode }: HeaderProps) {

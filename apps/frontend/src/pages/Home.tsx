@@ -14,7 +14,11 @@ import type { AuditSummary, AuditIssue, AuditOptions } from '@/services/home/typ
 
 import { saveHistory } from "@/services/history/historyService";
 
-export default function Home() {
+type HomeProps = {
+  onOpenRanking: () => void;
+};
+
+export default function Home({ onOpenRanking }: HomeProps) {
   const [darkMode, setDarkMode] = useState<boolean>(() => localStorage.getItem('theme-dark') === 'true');
   const [scanMode, setScanMode] = useState<'crawl' | 'list'>('crawl');
   const [scanUrl, setScanUrl] = useState<string>('https://www.info.unlp.edu.ar/');
@@ -123,7 +127,7 @@ export default function Home() {
 
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     let options: AuditOptions;
     let displayString: string;
 
@@ -158,13 +162,13 @@ export default function Home() {
 
     try {
       const report = await runAccessibilityAudit(options);
-      
+
       const historyItem = {
         fecha: new Date().toISOString(),
         url: displayString,
         summary: report.summary,
         byRule: report.byRule,
-       byPage: report.byPage,
+        byPage: report.byPage,
       };
 
       await saveHistory(historyItem);
@@ -194,7 +198,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300 pb-16">
-      <Header darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
+      <Header
+        darkMode={darkMode}
+        onToggleDarkMode={toggleDarkMode}
+      />
 
       {!hasScanned ? (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 flex flex-col items-center justify-center min-h-[50vh]">
@@ -213,12 +220,13 @@ export default function Home() {
             onMaxDurationMinutesChange={setMaxDurationMinutes}
             isScanning={isScanning}
             onSubmit={handleScan}
+            onOpenRanking={onOpenRanking}
             variant="hero"
           />
         </main>
       ) : (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex flex-col gap-8">
-          
+
           {/* Top Bar: Compact Audit Form */}
           <AuditForm
             scanMode={scanMode}
@@ -235,6 +243,7 @@ export default function Home() {
             onMaxDurationMinutesChange={setMaxDurationMinutes}
             isScanning={isScanning}
             onSubmit={handleScan}
+            onOpenRanking={onOpenRanking}
             variant="compact"
           />
 

@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  Globe, 
-  RefreshCw, 
-  Sparkles, 
-  ShieldAlert, 
-  Link2, 
-  Settings, 
-  ChevronDown, 
-  Plus, 
-  Trash2 
+import {
+  Globe,
+  RefreshCw,
+  Sparkles,
+  ShieldAlert,
+  Link2,
+  Settings,
+  ChevronDown,
+  Plus,
+  Trash2,
+  ChartColumn
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
@@ -27,6 +28,7 @@ interface AuditFormProps {
   onMaxDurationMinutesChange: (minutes: number) => void;
   isScanning: boolean;
   onSubmit: (e: React.FormEvent) => void;
+  onOpenRanking: () => void;
   variant?: 'hero' | 'compact';
 }
 
@@ -45,6 +47,7 @@ export function AuditForm({
   onMaxDurationMinutesChange,
   isScanning,
   onSubmit,
+  onOpenRanking,
   variant = 'hero'
 }: AuditFormProps) {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
@@ -68,8 +71,8 @@ export function AuditForm({
     setIsAdvancedOpen(!isAdvancedOpen);
   };
 
-  const isFormInvalid = scanMode === 'crawl' 
-    ? !scanUrl.trim() 
+  const isFormInvalid = scanMode === 'crawl'
+    ? !scanUrl.trim()
     : urlList.filter(u => u.trim() !== '').length === 0;
 
   // TAB SELECTOR COMPONENT (Segmented Control)
@@ -79,11 +82,10 @@ export function AuditForm({
         type="button"
         disabled={isScanning}
         onClick={() => onScanModeChange('crawl')}
-        className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer ${
-          scanMode === 'crawl' 
-            ? 'bg-primary text-primary-foreground shadow-md' 
-            : 'text-muted-foreground hover:text-foreground disabled:opacity-50'
-        }`}
+        className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer ${scanMode === 'crawl'
+          ? 'bg-primary text-primary-foreground shadow-md'
+          : 'text-muted-foreground hover:text-foreground disabled:opacity-50'
+          }`}
       >
         <Globe className="w-3.5 h-3.5" />
         Analizar Dominio
@@ -92,11 +94,10 @@ export function AuditForm({
         type="button"
         disabled={isScanning}
         onClick={() => onScanModeChange('list')}
-        className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer ${
-          scanMode === 'list' 
-            ? 'bg-primary text-primary-foreground shadow-md' 
-            : 'text-muted-foreground hover:text-foreground disabled:opacity-50'
-        }`}
+        className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer ${scanMode === 'list'
+          ? 'bg-primary text-primary-foreground shadow-md'
+          : 'text-muted-foreground hover:text-foreground disabled:opacity-50'
+          }`}
       >
         <Link2 className="w-3.5 h-3.5" />
         Lista de URLs
@@ -255,7 +256,7 @@ export function AuditForm({
             {scanMode === 'crawl' ? (
               <div className="flex flex-col gap-3 w-full">
                 {renderCrawlInput()}
-                
+
                 <button
                   type="submit"
                   disabled={isScanning || isFormInvalid}
@@ -273,11 +274,20 @@ export function AuditForm({
                     </>
                   )}
                 </button>
+
+                <button
+                  type="button"
+                  onClick={onOpenRanking}
+                  className="w-full border border-border bg-card hover:bg-muted py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <ChartColumn className="w-4 h-4" />
+                  Historial y Ranking
+                </button>
               </div>
             ) : (
               <div className="flex flex-col gap-3 w-full">
                 {renderListInputs()}
-                
+
                 <button
                   type="submit"
                   disabled={isScanning || isFormInvalid}
@@ -324,7 +334,7 @@ export function AuditForm({
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-      
+
         <CardContent>
           {renderTabSwitcher()}
 
@@ -350,6 +360,15 @@ export function AuditForm({
                       </>
                     )}
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={onOpenRanking}
+                    className="w-full border border-border bg-card hover:bg-muted py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <ChartColumn className="w-4 h-4" />
+                    Historial y Ranking
+                  </button>
                 </div>
               ) : (
                 <div className="flex flex-col gap-4">
@@ -370,6 +389,15 @@ export function AuditForm({
                         Comenzar Auditoría de URLs
                       </>
                     )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={onOpenRanking}
+                    className="w-full border border-border bg-card hover:bg-muted py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <ChartColumn className="w-4 h-4" />
+                    Historial y Ranking
                   </button>
                 </div>
               )}

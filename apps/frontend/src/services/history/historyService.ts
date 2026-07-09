@@ -23,4 +23,12 @@ export async function saveHistory(item: HistoryItem) {
   return response.json();
 }
 
-export async function getHistory() {}
+export async function getHistory(): Promise<HistoryItem[]> {
+  const response = await fetch(`${API_URL}/history`);
+
+  if (!response.ok) {
+    throw new Error("No se pudo obtener el historial.");
+  }
+
+  return response.json();
+}
