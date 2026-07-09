@@ -12,6 +12,8 @@ import {
 } from '@/services/home/auditService';
 import type { AuditSummary, AuditIssue, AuditOptions } from '@/services/home/types';
 
+import { saveHistory } from "@/services/history/historyService";
+
 export default function Home() {
   const [darkMode, setDarkMode] = useState<boolean>(() => localStorage.getItem('theme-dark') === 'true');
   const [scanMode, setScanMode] = useState<'crawl' | 'list'>('crawl');
@@ -156,6 +158,16 @@ export default function Home() {
 
     try {
       const report = await runAccessibilityAudit(options);
+      
+      const historyItem = {
+        fecha: new Date().toISOString(),
+        url: displayString,
+        summary: report.summary,
+        byRule: report.byRule,
+       byPage: report.byPage,
+      };
+
+      await saveHistory(historyItem);
 
       if (report && Array.isArray(report.violations)) {
         const mappedIssues = mapViolationsToIssues(report.violations);

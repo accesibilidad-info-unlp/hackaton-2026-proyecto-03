@@ -28,6 +28,8 @@ export interface AuditSummary {
 export interface AuditReport {
   summary: AuditSummary;
   violations: AuditViolation[];
+  byRule: Record<string, number>;
+  byPage: Record<string, number>;
   durationMs?: number;
 }
 

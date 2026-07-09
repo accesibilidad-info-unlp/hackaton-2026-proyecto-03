@@ -1,0 +1,40 @@
+[
+  {
+    "fecha": "2026-07-08T00:37:23.361Z",
+    "paginas": 3,
+    "errores": 157,
+    "byPage": {
+      "https://www.info.unlp.edu.ar/": 30,
+      "https://www.info.unlp.edu.ar/la-facultad-de-informatica-cumple-anos-25/": 49,
+      "https://www.info.unlp.edu.ar/autoridades/": 78
+    },
+    "byRule": {
+      "button-name": 27,
+      "heading-order": 4,
+      "landmark-one-main": 3,
+      "link-name": 4,
+      "page-has-heading-one": 2,
+      "region": 105,
+      "color-contrast": 12
+    }
+  },
+  {
+    "fecha": "2026-07-08T00:39:36.004Z",
+    "paginas": 3,
+    "errores": 157,
+    "byPage": {
+      "https://www.info.unlp.edu.ar/": 30,
+      "https://www.info.unlp.edu.ar/la-facultad-de-informatica-cumple-anos-25/": 49,
+      "https://www.info.unlp.edu.ar/autoridades/": 78
+    },
+    "byRule": {
+      "button-name": 27,
+      "heading-order": 4,
+      "landmark-one-main": 3,
+      "link-name": 4,
+      "page-has-heading-one": 2,
+      "region": 105,
+      "color-contrast": 12
+    }
+  }
+]
