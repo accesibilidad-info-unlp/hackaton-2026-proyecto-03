@@ -4,6 +4,7 @@ import type { HistoryItem } from "@/services/history/types";
 import StatisticsCards from "@/components/ranking/StatisticsCards";
 import HistoryTable from "@/components/ranking/HistoryTable";
 import RankingTable from "@/components/ranking/RankingTable";
+import SeverityCards from "@/components/ranking/SeverityCards";
 
 type RankingProps = {
     onBack: () => void;
@@ -29,6 +30,25 @@ export default function Ranking({ onBack }: RankingProps) {
         totalAudits > 0
             ? (totalViolations / totalAudits).toFixed(1)
             : "0";
+
+    const severityTotals = history.reduce(
+        (acc, audit) => {
+
+            acc.critical += audit.summary.severityBreakdown.critical;
+            acc.serious += audit.summary.severityBreakdown.serious;
+            acc.moderate += audit.summary.severityBreakdown.moderate;
+            acc.minor += audit.summary.severityBreakdown.minor;
+
+            return acc;
+
+        },
+        {
+            critical: 0,
+            serious: 0,
+            moderate: 0,
+            minor: 0,
+        }
+    );
 
     const rulesRanking = Object.entries(
         history.reduce<Record<string, number>>((acc, audit) => {
@@ -165,6 +185,13 @@ export default function Ranking({ onBack }: RankingProps) {
                             totalViolations={totalViolations}
                             totalPages={totalPages}
                             averageViolations={averageViolations}
+                        />
+
+                        <SeverityCards
+                            critical={severityTotals.critical}
+                            serious={severityTotals.serious}
+                            moderate={severityTotals.moderate}
+                            minor={severityTotals.minor}
                         />
 
                         <HistoryTable history={history} />
