@@ -32,21 +32,29 @@ export default function RankingTable({
 
             <div className="bg-card border border-border rounded-xl overflow-hidden shadow">
 
+                <div className="overflow-x-auto">   
+
                 <table className="w-full">
+                    <caption className="sr-only">
+                        {title}. {description}
+                    </caption>
 
                     <thead className="bg-muted">
 
                         <tr>
 
-                            <th className="text-left p-4">
+                            <th scope="col"
+                                className="text-left p-4">
                                 Posición
                             </th>
 
-                            <th className="text-left p-4">
+                            <th scope="col"
+                                className="text-left p-4">
                                 {labelHeader}
                             </th>
 
-                            <th className="text-right p-4">
+                            <th scope="col"
+                                className="text-right p-4">
                                 {valueHeader}
                             </th>
 
@@ -60,7 +68,7 @@ export default function RankingTable({
 
                             <tr
                                 key={index}
-                                className="border-t border-border hover:bg-muted/40 transition-colors"
+                                className="border-t border-border hover:bg-accent transition-colors"
                             >
 
                                 <td className="p-4 font-semibold">
@@ -83,6 +91,7 @@ export default function RankingTable({
 
                 </table>
 
+            </div>
             </div>
 
         </section>

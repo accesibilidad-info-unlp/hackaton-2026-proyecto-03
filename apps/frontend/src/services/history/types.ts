@@ -4,4 +4,5 @@ export interface HistoryItem {
   summary: any;
   byRule: Record<string, number>;
   byPage: Record<string, number>;
+  aiReport: any;
 }

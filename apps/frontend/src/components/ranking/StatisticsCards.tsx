@@ -47,6 +47,10 @@ export default function StatisticsCards({
 
                     <p className="text-3xl font-bold mt-2">
                         {card.value}
+                        <span className="sr-only">
+                            {" "}
+                            {card.title.toLowerCase()}
+                        </span>
                     </p>
                 </article>
             ))}

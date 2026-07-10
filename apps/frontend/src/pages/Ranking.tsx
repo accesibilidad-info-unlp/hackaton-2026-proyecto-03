@@ -5,6 +5,7 @@ import StatisticsCards from "@/components/ranking/StatisticsCards";
 import HistoryTable from "@/components/ranking/HistoryTable";
 import RankingTable from "@/components/ranking/RankingTable";
 import SeverityCards from "@/components/ranking/SeverityCards";
+import AIReportModal from "@/components/ranking/AIReportModal";
 
 type RankingProps = {
     onBack: () => void;
@@ -13,6 +14,9 @@ type RankingProps = {
 export default function Ranking({ onBack }: RankingProps) {
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const [selectedReport, setSelectedReport] = useState<any>(null);
+    const [showReport, setShowReport] = useState(false);
 
     const totalAudits = history.length;
 
@@ -194,7 +198,13 @@ export default function Ranking({ onBack }: RankingProps) {
                             minor={severityTotals.minor}
                         />
 
-                        <HistoryTable history={history} />
+                        <HistoryTable
+                            history={history}
+                            onOpenReport={(report) => {
+                                setSelectedReport(report);
+                                setShowReport(true);
+                            }}
+                        />
 
                         <RankingTable
                             title="Páginas con mayor cantidad de errores"
@@ -205,6 +215,14 @@ export default function Ranking({ onBack }: RankingProps) {
                         />
                     </>
                 )}
+                <AIReportModal
+                    report={selectedReport}
+                    open={showReport}
+                    onClose={() => {
+                        setShowReport(false);
+                        setSelectedReport(null);
+                    }}
+                />
             </main>
         </div>
     );

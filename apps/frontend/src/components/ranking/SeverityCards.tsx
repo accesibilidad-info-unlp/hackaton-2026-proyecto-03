@@ -16,22 +16,22 @@ export default function SeverityCards({
         {
             title: "Críticos",
             value: critical,
-            icon: "🔴",
+            color: "bg-red-500",
         },
         {
             title: "Serios",
             value: serious,
-            icon: "🟠",
+            color: "bg-orange-500",
         },
         {
             title: "Moderados",
             value: moderate,
-            icon: "🟡",
+            color: "bg-amber-400",
         },
         {
             title: "Menores",
             value: minor,
-            icon: "🔵",
+            color: "bg-blue-500",
         },
     ];
 
@@ -58,18 +58,32 @@ export default function SeverityCards({
 
                     <article
                         key={card.title}
-                        className="bg-card border rounded-xl p-6 shadow"
+                        aria-labelledby={`severity-${card.title}`}
+                        className="
+                        bg-card
+                        border
+                        rounded-xl
+                        p-6
+                        shadow
+                        transition-colors
+                        hover:bg-muted                        
+                        "
                     >
-                        <div className="text-3xl mb-2">
-                            {card.icon}
-                        </div>
-
-                        <h3 className="text-sm text-muted-foreground">
+                        <div
+                            className={`w-5 h-5 rounded-full ${card.color} mb-3`}
+                            aria-hidden="true"
+                        />
+                        <h3
+                            id={`severity-${card.title}`}
+                            className="text-sm text-muted-foreground"
+                        >
                             {card.title}
                         </h3>
-
                         <p className="text-3xl font-bold mt-2">
                             {card.value}
+                            <span className="sr-only">
+                                {" "}incidencias
+                            </span>
                         </p>
 
                     </article>
@@ -78,6 +92,6 @@ export default function SeverityCards({
 
             </div>
 
-        </section>
+        </section >
     );
 }

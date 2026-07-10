@@ -3,9 +3,13 @@ import { getAccessibilityLevel } from "@/utils/accessibilityLevel";
 
 type HistoryTableProps = {
     history: HistoryItem[];
+    onOpenReport: (report: any) => void;
 };
 
-export default function HistoryTable({ history }: HistoryTableProps) {
+export default function HistoryTable({
+    history,
+    onOpenReport,
+}: HistoryTableProps) {
     return (
         <section className="mt-10">
 
@@ -19,6 +23,11 @@ export default function HistoryTable({ history }: HistoryTableProps) {
             </p>
 
             <table className="w-full border border-border rounded-lg overflow-hidden">
+                <caption className="sr-only">
+                    Historial de auditorías realizadas con información sobre fecha, sitio
+                    analizado, cantidad de violaciones detectadas, páginas recorridas,
+                    nivel de accesibilidad e informe generado.
+                </caption>
 
                 <thead className="bg-muted">
                     <tr>
@@ -40,6 +49,10 @@ export default function HistoryTable({ history }: HistoryTableProps) {
                         <th className="text-center p-3">
                             Nivel
                         </th>
+                        <th className="text-center p-3">
+                            Informe IA
+                        </th>
+
                     </tr>
                 </thead>
 
@@ -56,7 +69,8 @@ export default function HistoryTable({ history }: HistoryTableProps) {
 
                             <tr
                                 key={index}
-                                className="border-t border-border hover:bg-muted/40 transition-colors"
+                                className="border-t border-border hover:bg-accent transition-colors"
+
                             >
 
                                 <td className="p-3">
@@ -66,18 +80,19 @@ export default function HistoryTable({ history }: HistoryTableProps) {
                                 <td
                                     className="p-3"
                                     title={audit.url}
+                                    aria-label={`Sitio auditado: ${audit.url}`}
                                 >
                                     {new URL(audit.url).hostname}
                                 </td>
 
                                 <td className="text-center p-3">
+
                                     {audit.summary.totalViolations}
                                 </td>
 
                                 <td className="text-center p-3">
                                     {audit.summary.totalPagesVisited}
                                 </td>
-
                                 <td className="text-center p-3">
 
                                     <span
@@ -85,6 +100,18 @@ export default function HistoryTable({ history }: HistoryTableProps) {
                                     >
                                         {level.label}
                                     </span>
+
+                                </td>
+
+                                <td className="text-center p-3">
+
+                                    <button
+                                        onClick={() => onOpenReport(audit.aiReport)}
+                                        className="px-3 py-1 rounded-lg border border-border hover:bg-muted transition-colors"
+                                        aria-label="Ver informe de inteligencia artificial de esta auditoría"
+                                    >
+                                        Ver Informe IA
+                                    </button>
 
                                 </td>
 
