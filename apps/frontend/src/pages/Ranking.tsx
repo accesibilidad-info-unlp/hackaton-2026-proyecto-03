@@ -65,7 +65,7 @@ export default function Ranking({ onBack }: RankingProps) {
 
         }, {})
     )
-        .sort((a, b) => b[1] - a[1])
+        .sort((a, b) => a[1] - b[1])
         .slice(0, 10);
     const ruleNames: Record<string, string> = {
         "button-name": "Botones sin nombre accesible",
@@ -105,7 +105,7 @@ export default function Ranking({ onBack }: RankingProps) {
 
         }, {})
     )
-        .sort((a, b) => b[1] - a[1])
+        .sort((a, b) => a[1] - b[1])
         .slice(0, 10);
 
     const pagesRows = pagesRanking.map(([page, count], index) => {
@@ -190,7 +190,13 @@ export default function Ranking({ onBack }: RankingProps) {
                             totalPages={totalPages}
                             averageViolations={averageViolations}
                         />
-
+                        <RankingTable
+                            title="Páginas con menor cantidad de errores"
+                            description="Este ranking muestra las páginas que acumularon la menor cantidad de errores detectados durante las auditorías realizadas."
+                            labelHeader="Página"
+                            valueHeader="Errores"
+                            rows={pagesRows}
+                        />
                         <SeverityCards
                             critical={severityTotals.critical}
                             serious={severityTotals.serious}
@@ -206,13 +212,6 @@ export default function Ranking({ onBack }: RankingProps) {
                             }}
                         />
 
-                        <RankingTable
-                            title="Páginas con mayor cantidad de errores"
-                            description="Este ranking muestra las páginas que acumularon la mayor cantidad de errores detectados durante las auditorías realizadas."
-                            labelHeader="Página"
-                            valueHeader="Errores"
-                            rows={pagesRows}
-                        />
                     </>
                 )}
                 <AIReportModal
