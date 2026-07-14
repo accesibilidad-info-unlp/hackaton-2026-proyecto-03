@@ -3522,5 +3522,263 @@
         }
       ]
     }
+  },
+  {
+    "fecha": "2026-07-14T11:26:43.624Z",
+    "url": "https://www.apple.com/",
+    "summary": {
+      "totalPagesVisited": 3,
+      "totalViolations": 7,
+      "severityBreakdown": {
+        "critical": 2,
+        "serious": 2,
+        "moderate": 1,
+        "minor": 2
+      }
+    },
+    "byRule": {
+      "aria-allowed-role": 2,
+      "aria-required-children": 2,
+      "color-contrast": 2,
+      "region": 1
+    },
+    "byPage": {
+      "https://www.apple.com/": 7
+    },
+    "aiReport": {
+      "score": 70,
+      "totalIssues": 7,
+      "timestamp": "2026-07-14T11:26:43.624Z",
+      "issues": [
+        {
+          "id": "1c8c5679025fac40",
+          "ruleId": "aria-allowed-role",
+          "impact": "minor",
+          "category": "other",
+          "description": "Garantiza que el atributo role tiene un valor apropiado para el elemento",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/aria-allowed-role?application=axeAPI",
+          "selector": "li[data-tv-show=\"widow’s bay\"]",
+          "codeSnippet": "<li id=\"endless-entertainmen...\" class=\"media-gallery-item t...\" data-media-gallery-i...=\"1\" data-tv-show=\"widow’s bay\" data-title=\"Widow’s Bay\" data-ac-gallery-item=\"\" data-analytics-galle...=\"widow’s bay\" data-ac-gallery-item...=\"4.16\" role=\"tabpanel\" aria-labelledby=\"endless-entertainmen...\" ...>",
+          "url": "https://www.apple.com/"
+        },
+        {
+          "id": "7795f2c7dee4a6a4",
+          "ruleId": "aria-allowed-role",
+          "impact": "minor",
+          "category": "other",
+          "description": "Garantiza que el atributo role tiene un valor apropiado para el elemento",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/aria-allowed-role?application=axeAPI",
+          "selector": "li[data-fam-arcade=\"hello kitty island adventure\"]",
+          "codeSnippet": "<li id=\"endless-entertainmen...\" class=\"media-gallery-item t...\" data-media-gallery-i...=\"1\" data-media-gallery-i...=\"arcade\" data-fam-arcade=\"hello kitty island a...\" data-ac-gallery-item=\"\" data-analytics-galle...=\"hello kitty island a...\" data-ac-gallery-item...=\"4.16\" role=\"tabpanel\" ...>",
+          "url": "https://www.apple.com/"
+        },
+        {
+          "id": "3b43a72ca2ab8701",
+          "ruleId": "aria-required-children",
+          "impact": "critical",
+          "category": "other",
+          "description": "Garantiza que los elementos con un 'ARIA role' que requieren 'child roles' los contienen",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/aria-required-children?application=axeAPI",
+          "selector": "#tv-media-gallery > .media-gallery-item-container[role=\"list\"]",
+          "codeSnippet": "<ul class=\"media-gallery-item-container\" role=\"list\" style=\"transform: translate3d(0px, 0px, 0px);\">",
+          "url": "https://www.apple.com/"
+        },
+        {
+          "id": "6db4c5decb1b153b",
+          "ruleId": "aria-required-children",
+          "impact": "critical",
+          "category": "other",
+          "description": "Garantiza que los elementos con un 'ARIA role' que requieren 'child roles' los contienen",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/aria-required-children?application=axeAPI",
+          "selector": "#fam-media-gallery > .media-gallery-item-container[role=\"list\"]",
+          "codeSnippet": "<ul class=\"media-gallery-item-container\" role=\"list\" style=\"transform: translate3d(0px, 0px, 0px);\">",
+          "url": "https://www.apple.com/"
+        },
+        {
+          "id": "60857cb470573040",
+          "ruleId": "color-contrast",
+          "impact": "serious",
+          "category": "contraste",
+          "description": "El contraste entre el color del texto y el fondo es menor al requerido (WCAG 2.2 AA exige al menos 4.5:1 para texto normal). Esto dificulta la lectura para personas con baja visión, daltonismo o fatiga visual.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axeAPI",
+          "selector": "#media-gallery-item-3 > .media-gallery-contents > .media-gallery-bottom-content > .media-gallery-button.button-neutral.button",
+          "codeSnippet": "<div class=\"button button-neutral media-gallery-button\" aria-hidden=\"true\">Listen now</div>",
+          "url": "https://www.apple.com/"
+        },
+        {
+          "id": "f5654d89c819e67b",
+          "ruleId": "color-contrast",
+          "impact": "serious",
+          "category": "contraste",
+          "description": "El contraste entre el color del texto y el fondo es menor al requerido (WCAG 2.2 AA exige al menos 4.5:1 para texto normal). Esto dificulta la lectura para personas con baja visión, daltonismo o fatiga visual.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/color-contrast?application=axeAPI",
+          "selector": "#media-gallery-item-6 > .media-gallery-contents > .media-gallery-bottom-content > .media-gallery-button.button-neutral.button",
+          "codeSnippet": "<div class=\"button button-neutral media-gallery-button\" aria-hidden=\"true\">Listen now</div>",
+          "url": "https://www.apple.com/"
+        },
+        {
+          "id": "64a4fe8b25dc9157",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "h1",
+          "codeSnippet": "<h1 class=\"visuallyhidden\">Apple</h1>",
+          "url": "https://www.apple.com/"
+        }
+      ]
+    }
+  },
+  {
+    "fecha": "2026-07-14T11:28:37.898Z",
+    "url": "https://www.norwegian.com/en/",
+    "summary": {
+      "totalPagesVisited": 1,
+      "totalViolations": 11,
+      "severityBreakdown": {
+        "critical": 1,
+        "serious": 1,
+        "moderate": 8,
+        "minor": 1
+      }
+    },
+    "byRule": {
+      "empty-heading": 1,
+      "html-has-lang": 1,
+      "meta-refresh": 1,
+      "region": 8
+    },
+    "byPage": {
+      "https://www.norwegian.com/en/": 11
+    },
+    "aiReport": {
+      "score": 70,
+      "totalIssues": 11,
+      "timestamp": "2026-07-14T11:28:37.898Z",
+      "issues": [
+        {
+          "id": "2fb3b92dded2a486",
+          "ruleId": "empty-heading",
+          "impact": "minor",
+          "category": "structure",
+          "description": "Se encontraron encabezados que no tienen texto. Esto confunde la navegación estructural al presentarse niveles vacíos a las tecnologías asistenciales.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/empty-heading?application=axeAPI",
+          "selector": "#Mvkfj9",
+          "codeSnippet": "<h2 id=\"Mvkfj9\"></h2>",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "e190fed18e671777",
+          "ruleId": "html-has-lang",
+          "impact": "serious",
+          "category": "other",
+          "description": "El elemento `<html>` carece del atributo `lang` (por ejemplo, `lang=\"es\"`). Sin esto, los lectores de pantalla no sabrán en qué idioma pronunciar el texto.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/html-has-lang?application=axeAPI",
+          "selector": "html",
+          "codeSnippet": "<html class=\"no-js\" lang=\"\" dir=\"ltr\">",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "00ba73ea565ddcb6",
+          "ruleId": "meta-refresh",
+          "impact": "critical",
+          "category": "other",
+          "description": "El sitio web refresca el contenido automáticamente. Esto desorienta a los usuarios con dificultades cognitivas o lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/meta-refresh?application=axeAPI",
+          "selector": "meta[http-equiv=\"refresh\"]",
+          "codeSnippet": "<meta http-equiv=\"refresh\" content=\"360\">",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "dadb1ac642ddb420",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "h1",
+          "codeSnippet": "<h1>Are you a <strong>human?</strong></h1>",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "c6e52d25e970d591",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "p:nth-child(3)",
+          "codeSnippet": "<p>For security purposes please follow the instructions below.</p>",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "3e8f38bc44d5d48f",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": ".client-ip",
+          "codeSnippet": "<div class=\"client-ip\">\n                <strong>IP:</strong> 2800:810:5ee:12e:8def:18f3:a25d:93c • <strong>RAY:</strong> a1b02f0c4f44ab20\n            </div>",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "9c89f137631ba82b",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "h3:nth-child(6)",
+          "codeSnippet": "<h3>Why am I seeing this?</h3>",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "fc78a3de63097201",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "p:nth-child(7)",
+          "codeSnippet": "<p>\n                Automated measures have detected potentially unusual traffic from your computer or network which may be in violation of our website's terms of use. Completing the requested steps helps confirm that everything is ok.\n            </p>",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "73a83f3c0e3dbe00",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "h3:nth-child(8)",
+          "codeSnippet": "<h3>What can I do to prevent this in the future?</h3>",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "e3eb986f90a464a9",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "p:nth-child(9)",
+          "codeSnippet": "<p>\n                If you are on a personal connection, like at home, you can run an anti-virus scan on your device to make sure\n                it is not infected with malware.\n            </p>",
+          "url": "https://www.norwegian.com/en/"
+        },
+        {
+          "id": "a1f1b9e2ad195d2f",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "p:nth-child(10)",
+          "codeSnippet": "<p>\n                If you are at an office or shared network, you can ask the network administrator to run a scan across the\n                network looking for misconfigured or infected devices.\n            </p>",
+          "url": "https://www.norwegian.com/en/"
+        }
+      ]
+    }
   }
 ]

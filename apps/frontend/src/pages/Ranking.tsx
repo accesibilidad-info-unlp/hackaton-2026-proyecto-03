@@ -6,6 +6,7 @@ import HistoryTable from "@/components/ranking/HistoryTable";
 import RankingTable from "@/components/ranking/RankingTable";
 import SeverityCards from "@/components/ranking/SeverityCards";
 import AIReportModal from "@/components/ranking/AIReportModal";
+import { getAccessibilityLevel } from "@/utils/accessibilityLevel";
 
 type RankingProps = {
     onBack: () => void;
@@ -37,14 +38,12 @@ export default function Ranking({ onBack }: RankingProps) {
 
     const severityTotals = history.reduce(
         (acc, audit) => {
-
             acc.critical += audit.summary.severityBreakdown.critical;
             acc.serious += audit.summary.severityBreakdown.serious;
             acc.moderate += audit.summary.severityBreakdown.moderate;
             acc.minor += audit.summary.severityBreakdown.minor;
 
             return acc;
-
         },
         {
             critical: 0,
@@ -53,47 +52,6 @@ export default function Ranking({ onBack }: RankingProps) {
             minor: 0,
         }
     );
-
-    const rulesRanking = Object.entries(
-        history.reduce<Record<string, number>>((acc, audit) => {
-
-            Object.entries(audit.byRule).forEach(([rule, count]) => {
-                acc[rule] = (acc[rule] || 0) + count;
-            });
-
-            return acc;
-
-        }, {})
-    )
-        .sort((a, b) => a[1] - b[1])
-        .slice(0, 10);
-    const ruleNames: Record<string, string> = {
-        "button-name": "Botones sin nombre accesible",
-        "heading-order": "Orden incorrecto de encabezados",
-        "landmark-one-main": "Falta región principal",
-        "link-name": "Enlaces sin nombre accesible",
-        "page-has-heading-one": "Página sin encabezado H1",
-        "region": "Regiones sin landmark",
-        "color-contrast": "Contraste insuficiente"
-
-    };
-    
-    const rulesRows = rulesRanking.map(([rule, count], index) => ({
-
-        position:
-            index === 0
-                ? "🥇"
-                : index === 1
-                    ? "🥈"
-                    : index === 2
-                        ? "🥉"
-                        : `#${index + 1}`,
-
-        label: ruleNames[rule] ?? rule,
-
-        value: count,
-
-    }));
 
     const pagesRanking = Object.entries(
         history.reduce<Record<string, number>>((acc, audit) => {
@@ -109,41 +67,57 @@ export default function Ranking({ onBack }: RankingProps) {
         .sort((a, b) => a[1] - b[1])
         .slice(0, 10);
 
+
     const pagesRows = pagesRanking.map(([page, count], index) => {
 
-    const url = new URL(page);
+        const url = new URL(page);
+        const isHome = url.pathname === "/";
 
-    const isHome = url.pathname === "/";
+        const audit = history.find(item =>
+            Object.keys(item.byPage).includes(page)
+        );
 
-    return {
-        position: `#${index + 1}`,
+        const level = audit
+            ? getAccessibilityLevel(
+                audit.summary.totalViolations,
+                audit.summary.totalPagesVisited
+            )
+            : null;
 
-        label: (
-            <div>
-                <a
-                    href={page}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-primary hover:underline"
-                >
-                    {url.hostname}
-                </a>
+        return {
+            position:
+                index === 0
+                    ? <span className="text-3xl inline-block -ml-2">🥇</span>
+                    : index === 1
+                        ? <span className="text-3xl inline-block -ml-2">🥈</span>
+                        : index === 2
+                            ? <span className="text-3xl inline-block -ml-2">🥉</span>
+                            : `#${index + 1}`,
 
-                {!isHome && (
-                    <div className="text-sm text-muted-foreground">
-                        {url.pathname}
-                    </div>
-                )}
-            </div>
-        ),
+            label: (
+                <div>
+                    <a
+                        href={page}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-primary hover:underline"
+                    >
+                        {url.hostname}
+                    </a>
 
-        value: count,
-    };
+                    {!isHome && (
+                        <div className="text-sm text-muted-foreground">
+                            {url.pathname}
+                        </div>
+                    )}
+                </div>
+            ),
 
-});
+            level,
 
-
-
+            value: count,
+        };
+    });
 
 
     useEffect(() => {
@@ -161,9 +135,11 @@ export default function Ranking({ onBack }: RankingProps) {
         loadHistory();
     }, []);
 
+
     return (
         <div className="min-h-screen bg-background text-foreground p-8">
             <main className="max-w-6xl mx-auto">
+
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-3xl font-bold">
@@ -184,6 +160,7 @@ export default function Ranking({ onBack }: RankingProps) {
                     </button>
                 </div>
 
+
                 {loading ? (
                     <p>Cargando historial...</p>
                 ) : (
@@ -194,13 +171,16 @@ export default function Ranking({ onBack }: RankingProps) {
                             totalPages={totalPages}
                             averageViolations={averageViolations}
                         />
+
                         <RankingTable
-                            title="Páginas con menor cantidad de errores"
-                            description="Este ranking muestra las páginas que acumularon la menor cantidad de errores detectados durante las auditorías realizadas."
+                            title="Top páginas con mejor accesibilidad"
+                            description="Las páginas con menor cantidad de errores detectados obtienen las mejores posiciones en este ranking de accesibilidad."
                             labelHeader="Página"
+                            extraHeader="Nivel"
                             valueHeader="Errores"
                             rows={pagesRows}
                         />
+
                         <SeverityCards
                             critical={severityTotals.critical}
                             serious={severityTotals.serious}
@@ -215,9 +195,9 @@ export default function Ranking({ onBack }: RankingProps) {
                                 setShowReport(true);
                             }}
                         />
-
                     </>
                 )}
+
                 <AIReportModal
                     report={selectedReport}
                     open={showReport}
@@ -226,6 +206,7 @@ export default function Ranking({ onBack }: RankingProps) {
                         setSelectedReport(null);
                     }}
                 />
+
             </main>
         </div>
     );
