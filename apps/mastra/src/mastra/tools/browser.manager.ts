@@ -1,5 +1,6 @@
 import { Stagehand } from '@browserbasehq/stagehand';
 import fs from 'fs';
+import { mastraEnv } from '../../shared/config/env';
 
 let stagehandInstance: Stagehand | null = null;
 
@@ -13,8 +14,8 @@ export async function getBrowserInstance(): Promise<Stagehand> {
       verbose: 0,
       disablePino: true,
       model: {
-        modelName: 'deepseek/deepseek-chat',
-        apiKey: process.env.DEEPSEEK_API_KEY || 'dummy-key',
+        modelName: 'deepseek/deepseek-v4-flash',
+        apiKey: mastraEnv.DEEPSEEK_API_KEY,
       },
       localBrowserLaunchOptions: {
         headless: true,

@@ -11,7 +11,7 @@
     },
     "scripts": {
         "install:all": "pnpm install --network-concurrency=1",
-        "dev": "pnpm --filter \"./apps/**\" --parallel run dev",
+        "dev": "pnpm --filter frontend --filter mastra --parallel run dev",
         "build": "pnpm -r run build",
         "lint": "pnpm -r run lint"
     }

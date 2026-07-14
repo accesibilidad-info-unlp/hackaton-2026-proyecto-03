@@ -1,17 +1,24 @@
 import { AuditState, StopConfig, StopReason } from '../../types/audit.types';
+import { mastraEnv } from '../../shared/config/env';
 
 let currentAuditState: AuditState | null = null;
-let currentStopConfig: StopConfig = {
-  maxPages: 1,
-  maxDepth: 3,
-  maxDurationMs: 5 * 60 * 1000, // 5 min
-};
+
+function getDefaultStopConfig(): StopConfig {
+  return {
+    maxPages: mastraEnv.MAX_PAGES,
+    maxDepth: mastraEnv.MAX_DEPTH,
+    maxDurationMs: mastraEnv.MAX_DURATION_MS,
+  };
+}
+
+let currentStopConfig: StopConfig = getDefaultStopConfig();
 
 export function initAuditState(initialUrl: string, config?: Partial<StopConfig>): AuditState {
+  const defaults = getDefaultStopConfig();
   currentStopConfig = {
-    maxPages: config?.maxPages ?? 1,
-    maxDepth: config?.maxDepth ?? 3,
-    maxDurationMs: config?.maxDurationMs ?? 5 * 60 * 1000,
+    maxPages: config?.maxPages ?? defaults.maxPages,
+    maxDepth: config?.maxDepth ?? defaults.maxDepth,
+    maxDurationMs: config?.maxDurationMs ?? defaults.maxDurationMs,
   };
 
   currentAuditState = {
@@ -40,7 +47,7 @@ export function getStopConfig(): StopConfig {
 export function checkStopSignals(state: AuditState, config: StopConfig): StopReason | null {
   if (state.stopped) return state.stopped;
   if (state.visited.length >= config.maxPages) return 'max_pages';
-  if (state.currentDepth >= config.maxDepth) return 'max_depth';
+  if (state.currentDepth > config.maxDepth) return 'max_depth';
   if (Date.now() - state.startTime >= config.maxDurationMs) return 'timeout';
   return null;
 }
