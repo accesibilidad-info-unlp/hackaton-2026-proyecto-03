@@ -3780,5 +3780,147 @@
         }
       ]
     }
+  },
+  {
+    "fecha": "2026-07-14T12:01:07.954Z",
+    "url": "https://addaw.org/es",
+    "summary": {
+      "totalPagesVisited": 3,
+      "totalViolations": 10,
+      "severityBreakdown": {
+        "critical": 0,
+        "serious": 2,
+        "moderate": 8,
+        "minor": 0
+      }
+    },
+    "byRule": {
+      "region": 6,
+      "heading-order": 1,
+      "landmark-one-main": 1,
+      "link-in-text-block": 2
+    },
+    "byPage": {
+      "https://addaw.org/es": 2,
+      "https://addaw.org/es/politica-de-cookies": 5,
+      "https://addaw.org/es/auditoria-de-accesibilidad-web": 3
+    },
+    "aiReport": {
+      "score": 74,
+      "totalIssues": 10,
+      "timestamp": "2026-07-14T12:01:07.954Z",
+      "issues": [
+        {
+          "id": "a095182b4c2dbda5",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "#_container_over > .cookies-container-header",
+          "codeSnippet": "<div class=\"cookies-container-header\">                  \n                <div class=\"cookies-container-cookie-modal-logo\">                    \n                    ¡Empecemos por el postre!                \n                </div>              \n            </div>",
+          "url": "https://addaw.org/es"
+        },
+        {
+          "id": "bf544cfe7555066a",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "#_container_over > .cookies-wrapper",
+          "codeSnippet": "<div class=\"cookies-wrapper\">",
+          "url": "https://addaw.org/es"
+        },
+        {
+          "id": "1f7a5c6ff1036566",
+          "ruleId": "heading-order",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La jerarquía de encabezados (H1, H2, H3...) debe ser secuencial lógica para estructurar el contenido correctamente para usuarios con lectores de pantalla y cognitivos.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/heading-order?application=axeAPI",
+          "selector": "h3:nth-child(2)",
+          "codeSnippet": "<h3>Definición y función genérica de las cookies</h3>",
+          "url": "https://addaw.org/es/politica-de-cookies"
+        },
+        {
+          "id": "755cc4d778914911",
+          "ruleId": "landmark-one-main",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "El documento debe tener una región principal (<main> o role=\"main\") para que los usuarios puedan saltar directamente al contenido principal.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/landmark-one-main?application=axeAPI",
+          "selector": "html",
+          "codeSnippet": "<html lang=\"es\">",
+          "url": "https://addaw.org/es/politica-de-cookies"
+        },
+        {
+          "id": "a535931cf475b2e1",
+          "ruleId": "link-in-text-block",
+          "impact": "serious",
+          "category": "other",
+          "description": "Los enlaces pueden distinguirse sin depender del color",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/link-in-text-block?application=axeAPI",
+          "selector": "li:nth-child(1) > a[href=\"/es\"]",
+          "codeSnippet": "<a href=\"/es\">Portada</a>",
+          "url": "https://addaw.org/es/politica-de-cookies"
+        },
+        {
+          "id": "db7e6c599a21ca6b",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "#contenido-principal",
+          "codeSnippet": "<section class=\"bloque-contenedor\" id=\"contenido-principal\">",
+          "url": "https://addaw.org/es/politica-de-cookies"
+        },
+        {
+          "id": "ef75d6e25fbc2da8",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": ".logos-gobierno",
+          "codeSnippet": "<div class=\"logos-gobierno\">",
+          "url": "https://addaw.org/es/politica-de-cookies"
+        },
+        {
+          "id": "942b5f2a7512ab88",
+          "ruleId": "link-in-text-block",
+          "impact": "serious",
+          "category": "other",
+          "description": "Los enlaces pueden distinguirse sin depender del color",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/link-in-text-block?application=axeAPI",
+          "selector": "li:nth-child(1) > a[href=\"/es\"]",
+          "codeSnippet": "<a href=\"/es\">Portada</a>",
+          "url": "https://addaw.org/es/auditoria-de-accesibilidad-web"
+        },
+        {
+          "id": "fa9399b1e5103b9e",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "#_container_over > .cookies-container-header",
+          "codeSnippet": "<div class=\"cookies-container-header\">                  \n                <div class=\"cookies-container-cookie-modal-logo\">                    \n                    ¡Empecemos por el postre!                \n                </div>              \n            </div>",
+          "url": "https://addaw.org/es/auditoria-de-accesibilidad-web"
+        },
+        {
+          "id": "e93022c68c58597f",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "#_container_over > .cookies-wrapper",
+          "codeSnippet": "<div class=\"cookies-wrapper\">",
+          "url": "https://addaw.org/es/auditoria-de-accesibilidad-web"
+        }
+      ]
+    }
   }
 ]

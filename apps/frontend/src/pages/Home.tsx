@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { HistoryItem } from "@/services/history/types";
 import { Header } from '@/components/layout/Header';
 import { AuditForm } from '@/components/home/AuditForm';
 import { AuditProgress } from '@/components/home/AuditProgress';
@@ -169,7 +170,7 @@ export default function Home({ onOpenRanking }: HomeProps) {
         setSummaryData({ ...report.summary, durationMs: report.durationMs });
 
         const calculatedScore = calculateAccessibilityScore(report.summary);
-        const historyItem = {
+        const historyItem: HistoryItem = {
           fecha: new Date().toISOString(),
           url: displayString,
           summary: report.summary,

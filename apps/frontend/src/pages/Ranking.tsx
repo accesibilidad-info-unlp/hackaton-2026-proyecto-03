@@ -121,20 +121,27 @@ export default function Ranking({ onBack }: RankingProps) {
 
 
     useEffect(() => {
-        async function loadHistory() {
-            try {
-                const data = await getHistory();
-                setHistory(data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
+    async function loadHistory() {
+        try {
+            const data = await getHistory();
+
+            const sortedHistory = data.sort(
+                (a, b) =>
+                    new Date(b.fecha).getTime() -
+                    new Date(a.fecha).getTime()
+            );
+
+            setHistory(sortedHistory);
+
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
         }
+    }
 
-        loadHistory();
-    }, []);
-
+    loadHistory();
+}, []);
 
     return (
         <div className="min-h-screen bg-background text-foreground p-8">
@@ -173,7 +180,7 @@ export default function Ranking({ onBack }: RankingProps) {
                         />
 
                         <RankingTable
-                            title="Top páginas con mejor accesibilidad"
+                            title="Top 10 páginas con mejor accesibilidad"
                             description="Las páginas con menor cantidad de errores detectados obtienen las mejores posiciones en este ranking de accesibilidad."
                             labelHeader="Página"
                             extraHeader="Nivel"
