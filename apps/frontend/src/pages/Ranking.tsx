@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getHistory } from "@/services/history/historyService";
 import type { HistoryItem } from "@/services/history/types";
+import { Header } from '@/components/layout/Header';
 import StatisticsCards from "@/components/ranking/StatisticsCards";
 import HistoryTable from "@/components/ranking/HistoryTable";
 import RankingTable from "@/components/ranking/RankingTable";
@@ -15,9 +16,33 @@ type RankingProps = {
 export default function Ranking({ onBack }: RankingProps) {
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
-
+    const [darkMode, setDarkMode] = useState<boolean>(
+        () => localStorage.getItem('theme-dark') === 'true'
+    );
     const [selectedReport, setSelectedReport] = useState<any>(null);
     const [showReport, setShowReport] = useState(false);
+
+    // Apply active theme (dark/light) on mount
+    useEffect(() => {
+        const isDark = localStorage.getItem('theme-dark') === 'true';
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, []);
+    const toggleDarkMode = () => {
+        const nextDark = !darkMode;
+
+        setDarkMode(nextDark);
+        localStorage.setItem('theme-dark', String(nextDark));
+
+        if (nextDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    };
 
     const totalAudits = history.length;
 
@@ -121,31 +146,38 @@ export default function Ranking({ onBack }: RankingProps) {
 
 
     useEffect(() => {
-    async function loadHistory() {
-        try {
-            const data = await getHistory();
+        async function loadHistory() {
+            try {
+                const data = await getHistory();
 
-            const sortedHistory = data.sort(
-                (a, b) =>
-                    new Date(b.fecha).getTime() -
-                    new Date(a.fecha).getTime()
-            );
+                const sortedHistory = data.sort(
+                    (a, b) =>
+                        new Date(b.fecha).getTime() -
+                        new Date(a.fecha).getTime()
+                );
 
-            setHistory(sortedHistory);
+                setHistory(sortedHistory);
 
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
         }
-    }
 
-    loadHistory();
-}, []);
+        loadHistory();
+    }, []);
 
     return (
-        <div className="min-h-screen bg-background text-foreground p-8">
-            <main className="max-w-6xl mx-auto">
+
+        <div className="min-h-screen bg-background text-foreground transition-colors duration-300 pb-16">
+
+            <Header
+                darkMode={darkMode}
+                onToggleDarkMode={toggleDarkMode}
+            />
+
+            <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
 
                 <div className="flex justify-between items-center mb-8">
                     <div>

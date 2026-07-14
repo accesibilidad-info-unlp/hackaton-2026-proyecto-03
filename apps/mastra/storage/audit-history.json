@@ -3922,5 +3922,195 @@
         }
       ]
     }
+  },
+  {
+    "fecha": "2026-07-14T14:37:33.801Z",
+    "url": "https://www.argentina.gob.ar/",
+    "summary": {
+      "totalPagesVisited": 3,
+      "totalViolations": 10,
+      "severityBreakdown": {
+        "critical": 0,
+        "serious": 5,
+        "moderate": 5,
+        "minor": 0
+      }
+    },
+    "byRule": {
+      "region": 4,
+      "landmark-unique": 1,
+      "link-name": 5
+    },
+    "byPage": {
+      "https://www.argentina.gob.ar/": 2,
+      "https://www.argentina.gob.ar/servicio/consultar-el-calendario-de-pagos-de-anses": 8
+    },
+    "aiReport": {
+      "score": 65,
+      "totalIssues": 10,
+      "timestamp": "2026-07-14T14:37:33.801Z",
+      "issues": [
+        {
+          "id": "d4f10a892b2f9e88",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "body > h1",
+          "codeSnippet": "<h1 class=\"sr-only\"><small>Presidencia de la Nación</small></h1>",
+          "url": "https://www.argentina.gob.ar/"
+        },
+        {
+          "id": "e63270b1fc5068b1",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "#skip-link",
+          "codeSnippet": "<div id=\"skip-link\">\n    <a href=\"#main-content\" class=\"element-invisible element-focusable\">Pasar al contenido principal</a>\n  </div>",
+          "url": "https://www.argentina.gob.ar/"
+        },
+        {
+          "id": "16c1325d488902cc",
+          "ruleId": "landmark-unique",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "Los puntos de referencia deben tener una única combinación de role o role/label/title (es decir, un nombre accesible único)",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/landmark-unique?application=axeAPI",
+          "selector": ".navbar",
+          "codeSnippet": "<nav class=\"navbar navbar-top navbar-default border-bottom-amarillo\">",
+          "url": "https://www.argentina.gob.ar/servicio/consultar-el-calendario-de-pagos-de-anses"
+        },
+        {
+          "id": "1cb5c037a2745c78",
+          "ruleId": "link-name",
+          "impact": "serious",
+          "category": "images",
+          "description": "Los enlaces carecen de un texto explicativo claro (por ejemplo, enlaces vacíos o íconos sin descripción), por lo que los usuarios no sabrán a dónde dirige el enlace.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/link-name?application=axeAPI",
+          "selector": "a[data-rating=\"1\"]",
+          "codeSnippet": "<a class=\"btn btn-link btn-sm margin-0\" href=\"#\" data-rating=\"1\"> <i class=\"fa fa-frown-o fa-3x text-danger\" aria-hidden=\"true\"> </i> </a>",
+          "url": "https://www.argentina.gob.ar/servicio/consultar-el-calendario-de-pagos-de-anses"
+        },
+        {
+          "id": "8c99a17cfbbd0aa3",
+          "ruleId": "link-name",
+          "impact": "serious",
+          "category": "images",
+          "description": "Los enlaces carecen de un texto explicativo claro (por ejemplo, enlaces vacíos o íconos sin descripción), por lo que los usuarios no sabrán a dónde dirige el enlace.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/link-name?application=axeAPI",
+          "selector": "a[data-rating=\"2\"]",
+          "codeSnippet": "<a class=\"btn btn-link btn-sm margin-0\" href=\"#\" data-rating=\"2\"> <i class=\"fa fa-frown-o fa-3x text-muted\" aria-hidden=\"true\"> </i> </a>",
+          "url": "https://www.argentina.gob.ar/servicio/consultar-el-calendario-de-pagos-de-anses"
+        },
+        {
+          "id": "b4c6d4fe73204ea4",
+          "ruleId": "link-name",
+          "impact": "serious",
+          "category": "images",
+          "description": "Los enlaces carecen de un texto explicativo claro (por ejemplo, enlaces vacíos o íconos sin descripción), por lo que los usuarios no sabrán a dónde dirige el enlace.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/link-name?application=axeAPI",
+          "selector": "a[data-rating=\"3\"]",
+          "codeSnippet": "<a class=\"btn btn-link btn-sm margin-0\" href=\"#\" data-rating=\"3\"> <i class=\"fa fa-meh-o fa-3x text-muted\" aria-hidden=\"true\"> </i> </a>",
+          "url": "https://www.argentina.gob.ar/servicio/consultar-el-calendario-de-pagos-de-anses"
+        },
+        {
+          "id": "3051044617e82d0e",
+          "ruleId": "link-name",
+          "impact": "serious",
+          "category": "images",
+          "description": "Los enlaces carecen de un texto explicativo claro (por ejemplo, enlaces vacíos o íconos sin descripción), por lo que los usuarios no sabrán a dónde dirige el enlace.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/link-name?application=axeAPI",
+          "selector": "a[data-rating=\"4\"]",
+          "codeSnippet": "<a class=\"btn btn-link btn-sm margin-0\" href=\"#\" data-rating=\"4\"> <i class=\"fa fa-smile-o fa-3x text-muted\" aria-hidden=\"true\"> </i> </a>",
+          "url": "https://www.argentina.gob.ar/servicio/consultar-el-calendario-de-pagos-de-anses"
+        },
+        {
+          "id": "5df3b7bd8312cfbf",
+          "ruleId": "link-name",
+          "impact": "serious",
+          "category": "images",
+          "description": "Los enlaces carecen de un texto explicativo claro (por ejemplo, enlaces vacíos o íconos sin descripción), por lo que los usuarios no sabrán a dónde dirige el enlace.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/link-name?application=axeAPI",
+          "selector": "a[data-rating=\"5\"]",
+          "codeSnippet": "<a class=\"btn btn-link btn-sm margin-0\" href=\"#\" data-rating=\"5\"> <i class=\"fa fa-smile-o fa-3x text-success\" aria-hidden=\"true\"> </i> </a>",
+          "url": "https://www.argentina.gob.ar/servicio/consultar-el-calendario-de-pagos-de-anses"
+        },
+        {
+          "id": "12e46bac90ecdf7a",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "body > h1",
+          "codeSnippet": "<h1 class=\"sr-only\"><small>Presidencia de la Nación</small></h1>",
+          "url": "https://www.argentina.gob.ar/servicio/consultar-el-calendario-de-pagos-de-anses"
+        },
+        {
+          "id": "e33ddcaaa91fc1be",
+          "ruleId": "region",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página no define puntos de referencia semánticos (`<main>`, `<nav>`, `<header>`, etc.), lo cual dificulta la orientación estructural y saltos rápidos en lectores de pantalla.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/region?application=axeAPI",
+          "selector": "#skip-link",
+          "codeSnippet": "<div id=\"skip-link\">\n    <a href=\"#main-content\" class=\"element-invisible element-focusable\">Pasar al contenido principal</a>\n  </div>",
+          "url": "https://www.argentina.gob.ar/servicio/consultar-el-calendario-de-pagos-de-anses"
+        }
+      ]
+    }
+  },
+  {
+    "fecha": "2026-07-14T14:38:35.518Z",
+    "url": "https://buenosaires.gob.ar/inicio/",
+    "summary": {
+      "totalPagesVisited": 1,
+      "totalViolations": 2,
+      "severityBreakdown": {
+        "critical": 0,
+        "serious": 0,
+        "moderate": 2,
+        "minor": 0
+      }
+    },
+    "byRule": {
+      "landmark-one-main": 1,
+      "page-has-heading-one": 1
+    },
+    "byPage": {
+      "https://buenosaires.gob.ar/inicio/": 2
+    },
+    "aiReport": {
+      "score": 96,
+      "totalIssues": 2,
+      "timestamp": "2026-07-14T14:38:35.518Z",
+      "issues": [
+        {
+          "id": "1a06a2a0c5ac8d85",
+          "ruleId": "landmark-one-main",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "El documento debe tener una región principal (<main> o role=\"main\") para que los usuarios puedan saltar directamente al contenido principal.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/landmark-one-main?application=axeAPI",
+          "selector": "html",
+          "codeSnippet": "<html lang=\"es-AR\" data-beasties-container=\"\">",
+          "url": "https://buenosaires.gob.ar/inicio/"
+        },
+        {
+          "id": "afe5406294a0e1c5",
+          "ruleId": "page-has-heading-one",
+          "impact": "moderate",
+          "category": "structure",
+          "description": "La página debe tener al menos un encabezado de nivel uno (<h1>) que identifique el contenido principal.",
+          "recommendation": "Consulte más detalles en: https://dequeuniversity.com/rules/axe/4.12/page-has-heading-one?application=axeAPI",
+          "selector": "html",
+          "codeSnippet": "<html lang=\"es-AR\" data-beasties-container=\"\">",
+          "url": "https://buenosaires.gob.ar/inicio/"
+        }
+      ]
+    }
   }
 ]
