@@ -13,7 +13,7 @@ importers:
         version: 3.5.0(zod@4.4.3)
       '@mastra/core':
         specifier: ^1.41.0
-        version: 1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3)
+        version: 1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3)
       '@mastra/duckdb':
         specifier: ^1.4.1
         version: 1.4.1(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3))
@@ -57,9 +57,12 @@ importers:
       '@types/node':
         specifier: ^25.9.2
         version: 25.9.2
+      concurrently:
+        specifier: ^10.0.3
+        version: 10.0.3
       mastra:
         specifier: ^1.12.2
-        version: 1.12.2(@hono/node-server@1.19.14(hono@4.12.23))(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3))(bufferutil@4.1.0)(typescript@6.0.3)(zod@4.4.3)
+        version: 1.12.2(@hono/node-server@1.19.14(hono@4.12.23))(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3))(bufferutil@4.1.0)(rxjs@7.8.2)(typescript@6.0.3)(zod@4.4.3)
       tsx:
         specifier: ^4.23.0
         version: 4.23.0
@@ -1559,6 +1562,10 @@ packages:
     resolution: {integrity: sha512-Fo07WOYGqMfCWHOzSXOt2CxDbC6skS/jO9ynEcmpANMoPrD+W1r1K6Vx7iNm+AQmETU1Xr2t+n8nzkV9t6xh3w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
+  chalk@5.6.2:
+    resolution: {integrity: sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+
   character-entities@2.0.2:
     resolution: {integrity: sha512-shx7oQ0Awen/BRIdkjkvz54PnEEI/EjwXDSIZp86/KKdbafHh1Df/RYGBhn4hbe2+uKC9FnT5UCEdyPz3ai9hQ==}
 
@@ -1586,6 +1593,10 @@ packages:
   clipboardy@3.0.0:
     resolution: {integrity: sha512-Su+uU5sr1jkUy1sGRpLKjKrvEOVXgSgiSInwa/qeID6aJ07yh+5NWc3h2QfjHjBnfX4LhtFcuAWKUsJ3r+fjbg==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
+  cliui@9.0.1:
+    resolution: {integrity: sha512-k7ndgKhwoQveBL+/1tqGJYNz097I7WOvwbmmU2AR5+magtbjPWQTS1C5vzGkBC8Ym8UWRzfKUzUUqFLypY4Q+w==}
+    engines: {node: '>=20'}
 
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
@@ -1626,6 +1637,11 @@ packages:
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
+
+  concurrently@10.0.3:
+    resolution: {integrity: sha512-hc3LH4UaKWd/bbyDK/IGVa4RB6PtQ3CUYwtrkzqHn+wIG3Hr5fhpRlk0L/gCa8ZE1L/Ufj50Zho69cI5w8SQBA==}
+    engines: {node: '>=22'}
+    hasBin: true
 
   confbox@0.1.8:
     resolution: {integrity: sha512-RMtmw0iFkeR4YV+fUOSucriAQNb9g8zFR52MWCtl+cCZOFRNL6zeB395vPzFhEjjn4fMxXudmELnl/KF/WrK6w==}
@@ -1780,6 +1796,9 @@ packages:
 
   electron-to-chromium@1.5.368:
     resolution: {integrity: sha512-7RckJJK4uESJF9PxvfMWd3TGqIiieUTG4HxnKaKuIpGbcr+r2ZEB3g2gAhCP3Fqm42vJSzLfgab9eva/C4/XVw==}
+
+  emoji-regex@10.6.0:
+    resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -2013,6 +2032,14 @@ packages:
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
     engines: {node: '>=6.9.0'}
+
+  get-caller-file@2.0.5:
+    resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
+    engines: {node: 6.* || 8.* || >= 10.*}
+
+  get-east-asian-width@1.6.0:
+    resolution: {integrity: sha512-QRbvDIbx6YklUe6RxeTeleMR0yv3cYH6PsPZHcnVn7xv7zO1BHN8r0XETu8n6Ye3Q+ahtSarc3WgtNWmehIBfA==}
+    engines: {node: '>=18'}
 
   get-intrinsic@1.3.0:
     resolution: {integrity: sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==}
@@ -2863,6 +2890,9 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
+  rxjs@7.8.2:
+    resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
+
   safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
 
@@ -2992,6 +3022,10 @@ packages:
     resolution: {integrity: sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA==}
     engines: {node: '>=12'}
 
+  string-width@7.2.0:
+    resolution: {integrity: sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==}
+    engines: {node: '>=18'}
+
   string_decoder@1.1.1:
     resolution: {integrity: sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==}
 
@@ -3028,6 +3062,10 @@ packages:
 
   suffix-thumb@5.0.2:
     resolution: {integrity: sha512-I5PWXAFKx3FYnI9a+dQMWNqTxoRt6vdBdb0O+BJ1sxXCWtSoQCusc13E58f+9p4MYx/qCnEMkD5jac6K2j3dgA==}
+
+  supports-color@10.2.2:
+    resolution: {integrity: sha512-SS+jx45GF1QjgEXQx4NJZV9ImqmO2NPz5FNsIHrsDjh2YsHnawpan7SNQ1o8NuhrbHZy9AZhIoCUiCeaW/C80g==}
+    engines: {node: '>=18'}
 
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -3081,6 +3119,10 @@ packages:
 
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+
+  tree-kill@1.2.2:
+    resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
+    hasBin: true
 
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
@@ -3208,6 +3250,10 @@ packages:
     resolution: {integrity: sha512-si7QWI6zUMq56bESFvagtmzMdGOtoxfR+Sez11Mobfc7tm+VkUckk9bW2UeffTGVUbOksxmSw0AA2gs8g71NCQ==}
     engines: {node: '>=12'}
 
+  wrap-ansi@9.0.2:
+    resolution: {integrity: sha512-42AtmgqjV+X1VpdOfyTGOYRi0/zsoLqtXQckTmqTeybT+BDIbM/Guxo7x3pE2vtpr1ok6xRqM9OpBe+Jyoqyww==}
+    engines: {node: '>=18'}
+
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
@@ -3226,6 +3272,10 @@ packages:
   xxhash-wasm@1.1.0:
     resolution: {integrity: sha512-147y/6YNh+tlp6nd/2pWq38i9h6mz/EuQ6njIrmW8D1BS5nCqs0P6DG+m6zTGnNz5I+uhZ0SHxBs9BsPrwcKDA==}
 
+  y18n@5.0.8:
+    resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
+    engines: {node: '>=10'}
+
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
 
@@ -3233,6 +3283,14 @@ packages:
     resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
     engines: {node: '>= 14.6'}
     hasBin: true
+
+  yargs-parser@22.0.0:
+    resolution: {integrity: sha512-rwu/ClNdSMpkSrUb+d6BRsSkLUq1fmfsY6TOpYzTwvwkg1/NRG85KBy3kq++A8LKQwX6lsu+aWad+2khvuXrqw==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=23}
+
+  yargs@18.0.0:
+    resolution: {integrity: sha512-4UEqdc2RYGHZc7Doyqkrqiln3p9X2DZVxaGbwhn2pi7MrRagKaOcIKe8L3OxYcbhXLgLFUS3zAYuQjKBQgmuNg==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=23}
 
   yocto-spinner@1.2.0:
     resolution: {integrity: sha512-Yw0hUB6UA3o4YUgKy3oSe9a4cxoaZ9sBfYDw+JSxo6Id0KoJGoxzPA24qqUXYKBWABs/zDSGTz9kww7t3F0XGw==}
@@ -4027,6 +4085,48 @@ snapshots:
     dependencies:
       '@lukeed/csprng': 1.1.0
 
+  '@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3)':
+    dependencies:
+      '@a2a-js/sdk': 0.3.13(express@5.2.1)
+      '@ai-sdk/provider-utils-v5': '@ai-sdk/provider-utils@3.0.25(zod@4.4.3)'
+      '@ai-sdk/provider-utils-v6': '@ai-sdk/provider-utils@4.0.27(zod@4.4.3)'
+      '@ai-sdk/provider-v5': '@ai-sdk/provider@2.0.3'
+      '@ai-sdk/provider-v6': '@ai-sdk/provider@3.0.10'
+      '@isaacs/ttlcache': 2.1.5
+      '@lukeed/uuid': 2.0.1
+      '@mastra/schema-compat': 1.2.11(zod@4.4.3)
+      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
+      '@sindresorhus/slugify': 2.2.1
+      '@standard-schema/spec': 1.1.0
+      ajv: 8.20.0
+      chat: 4.30.0(zod@4.4.3)
+      croner: 10.0.1
+      dotenv: 17.4.2
+      execa: 9.6.1
+      fastq: 1.20.1
+      gray-matter: 4.0.3
+      ignore: 7.0.5
+      json-schema: 0.4.0
+      lru-cache: 11.5.1
+      p-map: 7.0.4
+      p-retry: 7.1.1
+      picomatch: 4.0.4
+      posthog-node: 5.36.2(rxjs@7.8.2)
+      tokenx: 1.3.0
+      ws: 8.21.0(bufferutil@4.1.0)
+      xxhash-wasm: 1.1.0
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - '@bufbuild/protobuf'
+      - '@cfworker/json-schema'
+      - '@grpc/grpc-js'
+      - ai
+      - bufferutil
+      - express
+      - rxjs
+      - supports-color
+      - utf-8-validate
+
   '@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3)':
     dependencies:
       '@a2a-js/sdk': 0.3.13(express@5.2.1)
@@ -4069,14 +4169,14 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@mastra/deployer@1.41.0(@hono/node-server@1.19.14(hono@4.12.23))(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3))(bufferutil@4.1.0)(typescript@6.0.3)(zod@4.4.3)':
+  '@mastra/deployer@1.41.0(@hono/node-server@1.19.14(hono@4.12.23))(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3))(bufferutil@4.1.0)(typescript@6.0.3)(zod@4.4.3)':
     dependencies:
       '@babel/core': 7.29.7
       '@babel/preset-typescript': 7.29.7(@babel/core@7.29.7)
       '@babel/traverse': 7.29.7
       '@hono/node-ws': 1.3.1(@hono/node-server@1.19.14(hono@4.12.23))(bufferutil@4.1.0)(hono@4.12.23)
-      '@mastra/core': 1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3)
-      '@mastra/server': 1.41.0(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3))(zod@4.4.3)
+      '@mastra/core': 1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3)
+      '@mastra/server': 1.41.0(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3))(zod@4.4.3)
       '@optimize-lodash/rollup-plugin': 5.1.0(rollup@4.61.1)
       '@rollup/plugin-alias': 6.0.0(rollup@4.61.1)
       '@rollup/plugin-commonjs': 29.0.2(rollup@4.61.1)
@@ -4128,6 +4228,12 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+  '@mastra/loggers@1.1.2(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3))':
+    dependencies:
+      '@mastra/core': 1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3)
+      pino: 10.3.1
+      pino-pretty: 13.1.3
+
   '@mastra/loggers@1.1.2(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3))':
     dependencies:
       '@mastra/core': 1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3)
@@ -4163,9 +4269,9 @@ snapshots:
       zod-from-json-schema-v3: zod-from-json-schema@0.0.5
       zod-to-json-schema: 3.25.2(zod@4.4.3)
 
-  '@mastra/server@1.41.0(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3))(zod@4.4.3)':
+  '@mastra/server@1.41.0(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3))(zod@4.4.3)':
     dependencies:
-      '@mastra/core': 1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3)
+      '@mastra/core': 1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3)
       hono: 4.12.23
       zod: 4.4.3
 
@@ -4766,6 +4872,8 @@ snapshots:
 
   chalk@5.0.1: {}
 
+  chalk@5.6.2: {}
+
   character-entities@2.0.2: {}
 
   chat@4.30.0(zod@4.4.3):
@@ -4799,6 +4907,12 @@ snapshots:
       arch: 2.2.0
       execa: 5.1.1
       is-wsl: 2.2.0
+
+  cliui@9.0.1:
+    dependencies:
+      string-width: 7.2.0
+      strip-ansi: 7.2.0
+      wrap-ansi: 9.0.2
 
   color-convert@2.0.1:
     dependencies:
@@ -4847,6 +4961,15 @@ snapshots:
       suffix-thumb: 5.0.2
 
   concat-map@0.0.1: {}
+
+  concurrently@10.0.3:
+    dependencies:
+      chalk: 5.6.2
+      rxjs: 7.8.2
+      shell-quote: 1.8.4
+      supports-color: 10.2.2
+      tree-kill: 1.2.2
+      yargs: 18.0.0
 
   confbox@0.1.8: {}
 
@@ -4949,6 +5072,8 @@ snapshots:
   efrt@2.7.0: {}
 
   electron-to-chromium@1.5.368: {}
+
+  emoji-regex@10.6.0: {}
 
   emoji-regex@8.0.0: {}
 
@@ -5269,6 +5394,10 @@ snapshots:
 
   gensync@1.0.0-beta.2: {}
 
+  get-caller-file@2.0.5: {}
+
+  get-east-asian-width@1.6.0: {}
+
   get-intrinsic@1.3.0:
     dependencies:
       call-bind-apply-helpers: 1.0.2
@@ -5560,15 +5689,15 @@ snapshots:
   marky@1.3.0:
     optional: true
 
-  mastra@1.12.2(@hono/node-server@1.19.14(hono@4.12.23))(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3))(bufferutil@4.1.0)(typescript@6.0.3)(zod@4.4.3):
+  mastra@1.12.2(@hono/node-server@1.19.14(hono@4.12.23))(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3))(bufferutil@4.1.0)(rxjs@7.8.2)(typescript@6.0.3)(zod@4.4.3):
     dependencies:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
       '@clack/prompts': 1.5.1
       '@expo/devcert': 1.2.1
-      '@mastra/core': 1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3)
-      '@mastra/deployer': 1.41.0(@hono/node-server@1.19.14(hono@4.12.23))(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3))(bufferutil@4.1.0)(typescript@6.0.3)(zod@4.4.3)
-      '@mastra/loggers': 1.1.2(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(zod@4.4.3))
+      '@mastra/core': 1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3)
+      '@mastra/deployer': 1.41.0(@hono/node-server@1.19.14(hono@4.12.23))(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3))(bufferutil@4.1.0)(typescript@6.0.3)(zod@4.4.3)
+      '@mastra/loggers': 1.1.2(@mastra/core@1.41.0(bufferutil@4.1.0)(express@5.2.1)(rxjs@7.8.2)(zod@4.4.3))
       archiver: 7.0.1
       commander: 14.0.3
       dotenv: 17.4.2
@@ -5578,7 +5707,7 @@ snapshots:
       local-pkg: 1.2.1
       openapi-fetch: 0.17.0
       picocolors: 1.1.1
-      posthog-node: 5.36.2
+      posthog-node: 5.36.2(rxjs@7.8.2)
       semver: 7.8.2
       serve: 14.2.6
       serve-handler: 6.1.7
@@ -6149,6 +6278,12 @@ snapshots:
     dependencies:
       '@posthog/core': 1.30.8
 
+  posthog-node@5.36.2(rxjs@7.8.2):
+    dependencies:
+      '@posthog/core': 1.30.8
+    optionalDependencies:
+      rxjs: 7.8.2
+
   pretty-ms@9.3.0:
     dependencies:
       parse-ms: 4.0.0
@@ -6358,6 +6493,10 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  rxjs@7.8.2:
+    dependencies:
+      tslib: 2.8.1
+
   safe-buffer@5.1.2: {}
 
   safe-buffer@5.2.1: {}
@@ -6517,6 +6656,12 @@ snapshots:
       emoji-regex: 9.2.2
       strip-ansi: 7.2.0
 
+  string-width@7.2.0:
+    dependencies:
+      emoji-regex: 10.6.0
+      get-east-asian-width: 1.6.0
+      strip-ansi: 7.2.0
+
   string_decoder@1.1.1:
     dependencies:
       safe-buffer: 5.1.2
@@ -6544,6 +6689,8 @@ snapshots:
   strip-json-comments@5.0.3: {}
 
   suffix-thumb@5.0.2: {}
+
+  supports-color@10.2.2: {}
 
   supports-color@7.2.0:
     dependencies:
@@ -6607,6 +6754,8 @@ snapshots:
       tldts: 7.4.2
 
   tr46@0.0.3: {}
+
+  tree-kill@1.2.2: {}
 
   trough@2.2.0: {}
 
@@ -6736,6 +6885,12 @@ snapshots:
       string-width: 5.1.2
       strip-ansi: 7.2.0
 
+  wrap-ansi@9.0.2:
+    dependencies:
+      ansi-styles: 6.2.3
+      string-width: 7.2.0
+      strip-ansi: 7.2.0
+
   wrappy@1.0.2: {}
 
   ws@8.21.0(bufferutil@4.1.0):
@@ -6744,9 +6899,22 @@ snapshots:
 
   xxhash-wasm@1.1.0: {}
 
+  y18n@5.0.8: {}
+
   yallist@3.1.1: {}
 
   yaml@2.9.0: {}
+
+  yargs-parser@22.0.0: {}
+
+  yargs@18.0.0:
+    dependencies:
+      cliui: 9.0.1
+      escalade: 3.2.0
+      get-caller-file: 2.0.5
+      string-width: 7.2.0
+      y18n: 5.0.8
+      yargs-parser: 22.0.0
 
   yocto-spinner@1.2.0:
     dependencies:
