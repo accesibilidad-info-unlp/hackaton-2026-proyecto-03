@@ -77,6 +77,7 @@ export default function Ranking({ onBack }: RankingProps) {
         "color-contrast": "Contraste insuficiente"
 
     };
+    
     const rulesRows = rulesRanking.map(([rule, count], index) => ({
 
         position:
@@ -110,33 +111,36 @@ export default function Ranking({ onBack }: RankingProps) {
 
     const pagesRows = pagesRanking.map(([page, count], index) => {
 
-        const url = new URL(page);
+    const url = new URL(page);
 
-        const isHome = url.pathname === "/";
+    const isHome = url.pathname === "/";
 
-        return {
+    return {
+        position: `#${index + 1}`,
 
-            position: `#${index + 1}`,
+        label: (
+            <div>
+                <a
+                    href={page}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-primary hover:underline"
+                >
+                    {url.hostname}
+                </a>
 
-            label: (
-                <>
-                    <div className="font-medium">
-                        {url.hostname}
+                {!isHome && (
+                    <div className="text-sm text-muted-foreground">
+                        {url.pathname}
                     </div>
+                )}
+            </div>
+        ),
 
-                    {!isHome && (
-                        <div className="text-sm text-muted-foreground">
-                            {url.pathname}
-                        </div>
-                    )}
-                </>
-            ),
+        value: count,
+    };
 
-            value: count,
-
-        };
-
-    });
+});
 
 
 
